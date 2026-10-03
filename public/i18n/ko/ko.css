@@ -1,0 +1,11 @@
+/* 한글 패치: 한국어 글꼴과 글자 폭 보정 (js/i18n/i18n.js가 한국어 모드일 때만 넣는다). */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap');
+
+:root.lang-ko {
+  --font-cjk: 'Noto Sans KR', 'Malgun Gothic', '맑은 고딕', 'Apple SD Gothic Neo', 'Noto Sans CJK KR', 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+  --font-num: 'Bender', 'Rajdhani', 'Oxanium', 'Noto Sans KR', 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+  --font-display: 'Novecento', 'Novecento Wide', 'Oxanium', 'Rajdhani', 'Noto Sans KR', 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+}
+
+/* 한국어는 띄어쓰기 단위로 줄바꿈한다 (중국어용 글자 단위 줄바꿈 방지). */
+:root.lang-ko body { word-break: keep-all; overflow-wrap: anywhere; }

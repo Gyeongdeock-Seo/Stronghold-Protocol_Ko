@@ -16,6 +16,9 @@
 //   formatPlaceholder(value, fmt) → '15%' / '3' for the official number formats ('0%', '0.0%', '0', '0.0')
 //   fillPlaceholders(src, values) → replace `{i:fmt}` / `{i}` by values[i] (unknown indexes kept)
 
+// 한글 패치: 태그로 나누기 전에 문장 전체를 번역한다 (Node 테스트에서는 원문 그대로).
+import { tr } from '../i18n/i18n.js';
+
 /** Official style id → our CSS modifier (css/screens/game-panels.css `.rt-*`). */
 const STYLE_CLASS = {
   'ba.vup': 'rt-vup',
@@ -54,7 +57,7 @@ const TAG_CLOSE = '</>';
  */
 export function parseRichText(src) {
   if (src == null) return [];
-  const s = String(src).replace(/\\n/g, '\n').replace(/\r\n?/g, '\n');
+  const s = tr(String(src)).replace(/\\n/g, '\n').replace(/\r\n?/g, '\n');
   /** @type {Array<{ cls: string, term: boolean }>} */
   const stack = [];
   const out = [];
@@ -147,7 +150,7 @@ export function formatPlaceholder(value, fmt = '0') {
  */
 export function fillPlaceholders(src, values, formats = []) {
   if (src == null) return '';
-  return String(src).replace(/\{(\d{1,2})(?::([^{}]{1,12}))?\}/g, (whole, idx, fmt) => {
+  return tr(String(src)).replace(/\{(\d{1,2})(?::([^{}]{1,12}))?\}/g, (whole, idx, fmt) => {
     const i = Number(idx);
     const v = Array.isArray(values) ? values[i] : undefined;
     if (v == null) return whole;

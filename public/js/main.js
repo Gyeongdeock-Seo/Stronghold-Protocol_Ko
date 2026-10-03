@@ -26,6 +26,8 @@
 
 // Polyfills first (older Safari / Firefox ESR): every module evaluated after this one sees them.
 import './ui/compat.js';
+// 한글 패치: 첫 렌더 전에 한국어 사전을 불러오고 DOM 번역기를 건다 (top-level await).
+import './i18n/i18n.js';
 import { render } from '../vendor/preact.module.js';
 import { useErrorBoundary } from '../vendor/hooks.module.js';
 import { html, UiHosts, Button, MicroLabel, closeAllDialogs } from './ui/components.js';

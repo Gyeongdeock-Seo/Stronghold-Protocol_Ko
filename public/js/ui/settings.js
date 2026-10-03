@@ -9,6 +9,7 @@ import { sanitizeSettings } from './gameLogic.js';
 import { audio } from '../audio.js';
 import { openGuide } from './guide.js';
 import { detectFeatures } from './device.js';
+import { lang, setLang } from '../i18n/i18n.js';
 
 /** Settings store: { bgm, sfx, muted, damageNumbers, quality }. */
 export const settingsStore = createStore(sanitizeSettings(loadPref('settings', null)));
@@ -69,6 +70,13 @@ export function SettingsModal({ open, onClose }) {
         <div class="set-seg" role="radiogroup">
           ${QUALITY.map(([id, label]) => html`<button key=${id} type="button" role="radio" aria-checked=${s.quality === id ? 'true' : 'false'}
             class=${s.quality === id ? 'is-on' : ''} onClick=${() => updateSettings({ quality: id })}>${label}</button>`)}
+        </div>
+      </div>
+      <div class="set-row" data-i18n-skip>
+        <span class="set-row__label">${lang === 'ko' ? '언어' : '语言'}<${MicroLabel}>LANGUAGE<//></span>
+        <div class="set-seg" role="radiogroup">
+          ${[['ko', '한국어'], ['zh', '中文']].map(([id, label]) => html`<button key=${id} type="button" role="radio" aria-checked=${lang === id ? 'true' : 'false'}
+            class=${lang === id ? 'is-on' : ''} onClick=${() => { if (lang !== id) setLang(id); }}>${label}</button>`)}
         </div>
       </div>
       ${touchUi
