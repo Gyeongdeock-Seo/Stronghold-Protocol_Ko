@@ -1,80 +1,80 @@
-# 卫戍协议：盟约 · Stronghold Protocol: Covenant
+# 위수 프로토콜: 맹약 · Stronghold Protocol: Covenant
 
-《明日方舟》季节性自走棋塔防玩法「卫戍协议：盟约」的**非官方同人复刻**：浏览器即开即玩，单人或 1–4 人联机合作。
+《명일방주》의 시즌 오토체스 타워 디펜스 모드 「위수 프로토콜: 맹약」을 **비공식 팬 메이크로 재현한 작품**입니다. 브라우저에서 바로 플레이할 수 있으며, 싱글 플레이 또는 1–4인 온라인 협동을 지원합니다.
 
 ![version](https://img.shields.io/badge/version-0.1.1-2ea44f)
 ![license](https://img.shields.io/badge/code%20license-GPL--3.0--or--later-blue)
 ![node](https://img.shields.io/badge/node-22%20%7C%2024-339933)
 
-## 声明
+## 고지사항
 
 > [!IMPORTANT]
-> - 本项目是玩家自制的**非官方同人作品**，与上海鹰角网络科技有限公司（Hypergryph）、Yostar 及其关联方**没有任何关系**，未获其授权或认可。
-> - 《明日方舟》及「卫戍协议」相关的名称、角色、美术、音乐、音效、文本与数据等素材，版权归原权利人所有。这些素材**不适用**本项目的 GPL-3.0 许可证；GPL 只覆盖本项目自己编写的代码。
-> - 仅供学习交流与个人非商业使用。**严禁任何形式的盈利**，包括但不限于：售卖本项目或整合包、付费下载或付费分发、收费服务器或收费代开、广告 / 打赏 / 会员等变现方式，以及其他任何商业用途。
-> - 仓库源码不包含游戏的美术与音频素材（只有由官方数据表生成的数据和几张游戏截图，同样不适用 GPL）；[Releases](../../releases/latest) 中的整合包为了方便玩家附带了素材，下载即视为同意本声明。请勿将素材用于本项目以外的用途或单独再分发。完整条款见 [NOTICE.md](NOTICE.md)。
-> - 权利人如认为本项目侵犯其权益，请通过 Issue 联系，我们会**立即删除**相关内容。
-> - 本项目按「现状」提供，**不提供任何担保**，使用风险自负。
+> - 본 프로젝트는 플레이어가 제작한 **비공식 팬 메이드 작품**으로, 상하이 하이퍼그리프 네트워크 테크놀로지 유한회사(Hypergryph), Yostar 및 그 관계사와 **아무런 관계가 없으며**, 이들의 허가나 승인을 받지 않았습니다.
+> - 《명일방주》 및 「위수 프로토콜」과 관련된 명칭, 캐릭터, 일러스트, 음악, 음향 효과, 텍스트 및 데이터 등의 소재에 대한 저작권은 원 권리자에게 있습니다. 이러한 소재에는 본 프로젝트의 GPL-3.0 라이선스가 **적용되지 않으며**, GPL은 본 프로젝트에서 직접 작성한 코드에만 적용됩니다.
+> - 학습 및 교류와 개인적인 비상업적 사용만을 목적으로 합니다. **어떠한 형태의 영리 행위도 엄격히 금지**됩니다. 여기에는 프로젝트 또는 통합 패키지 판매, 유료 다운로드 또는 유료 배포, 유료 서버 또는 유료 대행 운영, 광고 / 후원 / 멤버십 등의 수익화 방식 및 기타 모든 상업적 이용이 포함되며 이에 국한되지 않습니다.
+> - 저장소의 소스 코드에는 게임의 미술 및 오디오 소재가 포함되어 있지 않습니다(공식 데이터 테이블로 생성한 데이터와 몇 장의 게임 스크린샷만 포함되어 있으며, 이들 역시 GPL의 적용을 받지 않습니다). [Releases](../../releases/latest)의 통합 패키지에는 플레이어의 편의를 위해 소재가 포함되어 있으며, 다운로드하는 것은 본 고지사항에 동의하는 것으로 간주됩니다. 소재를 본 프로젝트 외의 용도로 사용하거나 별도로 재배포하지 마십시오. 자세한 약관은 [NOTICE.md](NOTICE.md)를 참조하십시오.
+> - 권리자가 본 프로젝트가 자신의 권리를 침해한다고 판단하는 경우 Issue를 통해 연락해 주시면 **즉시** 관련 내용을 삭제하겠습니다.
+> - 본 프로젝트는 「있는 그대로」 제공되며 **어떠한 보증도 제공하지 않습니다**. 사용에 따른 위험은 사용자 본인이 부담합니다.
 
-English summary: [below](#english).
+영문 요약: [아래](#english).
 
-| 同盟房间 | 策略轮选 | 休整期（商店 / 盟约） |
+| 동맹 방 | 전략 선택 | 정비 기간（상점 / 맹약） |
 |---|---|---|
 | ![房间](docs/img/room.jpg) | ![策略](docs/img/band-draft.jpg) | ![休整期](docs/img/prep.jpg) |
-| **部署方向轮盘** | **作战** | **最终攻势** |
+| **배치 방향 휠** | **전투** | **최종 공세** |
 | ![方向](docs/img/facing-wheel.jpg) | ![作战](docs/img/combat.jpg) | ![最终攻势](docs/img/final-assault.jpg) |
 
-## 目录
+## 목차
 
-- [声明](#声明) · [简介](#简介) · [功能一览](#功能一览)
-- [快速开始](#快速开始)：[整合包](#方式一整合包推荐) · [从源码运行](#方式二从源码运行) · [系统要求](#系统要求) · [端口与配置](#端口与配置) · [局域网联机](#和朋友一起玩局域网)
-- [联机方式](#联机方式) · [操作](#操作) · [文档](#文档) · [开发与测试](#开发与测试) · [项目结构](#项目结构)
-- [许可证](#许可证) · [致谢与数据来源](#致谢与数据来源) · [贡献](#贡献)
+- [고지사항](#고지사항) · [소개](#소개) · [기능 개요](#기능-개요)
+- [빠른 시작](#빠른-시작)：[통합 패키지](#방법-1-통합-패키지-권장) · [소스 코드에서 실행](#방법-2-소스-코드에서-실행) · [시스템 요구 사항](#시스템-요구-사항) · [포트 및 설정](#포트-및-설정) · [친구와 함께 LAN으로 플레이](#친구와-함께-플레이-lan)
+- [온라인 플레이 방법](#온라인-플레이-방법) · [조작](#조작) · [문서](#문서) · [개발 및 테스트](#개발-및-테스트) · [프로젝트 구조](#프로젝트-구조)
+- [라이선스](#라이선스) · [감사 및 데이터 출처](#감사-및-데이터-출처) · [기여](#기여)
 
-## 简介
+## 소개
 
-「卫戍协议：盟约」是自走棋 + 塔防：休整期在调度中心招募干员、摆阵、配装备，作战期干员自动部署，迎击从红门涌来的敌人，漏过去的敌人扣目标生命值。本项目在浏览器里复刻了这一玩法，规则和数值尽量对照官方数据表与 PRTS 核对。
+「위수 프로토콜: 맹약」은 오토체스 + 타워 디펜스 게임입니다. 정비 기간에는 지휘 센터에서 오퍼레이터를 모집하고, 진형을 구성하며, 장비를 배치합니다. 전투 기간에는 오퍼레이터가 자동으로 배치되어 빨간 문에서 몰려오는 적을 상대하며, 놓친 적은 목표의 생명력을 감소시킵니다. 본 프로젝트는 이 게임플레이를 브라우저에서 재현했으며, 규칙과 수치는 가능한 한 공식 데이터 테이블 및 PRTS를 대조하여 구현했습니다.
 
-- **独立模拟**（单人）与**同盟模拟**（1–4 人**合作**，没有 PvP；空位可以加 AI 队友）。
-- 服务器是一个 Node.js 程序，**战斗在各玩家的浏览器里模拟**（和官方一样），服务器只管经济与回合，一台低功耗小主机就能开服。
-- 当前版本 0.1.1：修复了首个公开版本（0.1.0）发布后玩家反馈的问题，详见 [CHANGELOG.md](CHANGELOG.md)。仍有少数规则按推断实现，与官方不一致的地方欢迎在 Issue 里反馈。
+- **싱글 시뮬레이션**(1인)과 **동맹 시뮬레이션**(1–4인 **협동**, PvP 없음, 빈 자리는 AI 팀원을 추가할 수 있음).
+- 서버는 Node.js 프로그램이며, **전투는 각 플레이어의 브라우저에서 시뮬레이션**됩니다(공식과 동일). 서버는 경제와 라운드만 관리하므로 저전력 소형 PC 한 대로도 서버를 열 수 있습니다.
+- 현재 버전은 0.1.1입니다. 첫 공개 버전(0.1.0) 이후 플레이어 피드백을 바탕으로 문제를 수정했습니다. 자세한 내용은 [CHANGELOG.md](CHANGELOG.md)를 참조하십시오. 아직 일부 규칙은 추론을 바탕으로 구현되어 있으며, 공식과 일치하지 않는 부분은 Issue로 알려주시면 감사하겠습니다.
 
-## 功能一览
+## 기능 개요
 
-- **完整的一局**：确认本局信息 → 策略轮选（40 名策略）→ 14 回合 → 结算称号；险境及以上满足条件时进入第 15 回合「隐秘核心」。
-- **4 种难度**：标准 / 险境 / 绝境 / 终极，独立与同盟各一套参数，均取自官方数据。
-- **休整期**：招募、刷新、冻结、升级调度中心；整备区与临时整备区；从整备区拖到棋盘部署，用**方向轮盘**选择朝向。同盟模拟的卡池共用。
-- **晋升精锐**：3 名同名干员自动合成精锐，并获得一次高一阶的免费招募。
-- **干员与调配**：112 名可招募干员（+ 精锐）及其技能、天赋和特质；开局前可以为每名干员选择携带的技能（283 个技能全部手工实现）和精锐的模组。
-- **盟约与层数**：23 个盟约（8 个势力核心盟约 + 附加盟约），层数整局保留，每个盟约最多 999 层。
-- **装备与机变**：装备与法术，同名装备合成、特定组合赋予盟约效果；已配发的装备锁定在干员身上。部分回合开始前有机变选卡（装备、资金、干员、层数、悬赏等）。
-- **自动作战**：技能按官方「技能策略」自动释放；按接触半径阻挡，阻挡者倒下时由接触的干员接替；元素损伤与元素爆发；召唤物由玩家手动摆放；推开 / 拉拽按力度与重量计算；被击倒的干员留在原地显示再部署倒计时。
-- **地形与敌人**：阻隔工事、射击台、源石流吹风机、沼泽、排气格栅、涨潮等地形装置；空中与近地悬浮敌人、悬赏敌人。
-- **联防**：有人漏怪、又有人完美作战时，完美作战的队友带着阵容帮忙拦截漏掉的敌人。
-- **最终攻势与隐秘核心**：两人共享一个战场，全队共同削减同一条领袖血条；10 个敌方领袖，巨型领袖约 5×3 格的受击范围，以及官方的限伤规则。
-- **结算称号**：卫戍之星、不朽盟约、坚若磐石等 6 个称号。
-- **断线重连**：同盟模拟断线后 10 分钟内重新打开页面即可回到原座位，掉线期间按原阵容自动作战，也可以「暂离」交给 AI 托管；独立模拟 24 小时内可以回来继续（同一个浏览器）。
-- **交互细节**：漏怪时顶栏的目标生命值实时减少（结算时确定）；点选、拖放和配发装备都按地上的方格；购买、升级和机变选卡都需要点两次确认；只有一名玩家时除作战外不计时。
-- **画面与声音**：真实 Spine 小人、官方 BGM 与音效、表情（6 套 × 6 个）、作战特效；可选的官方 3D 棋盘（需要从本机客户端提取贴图）。
-- **手机与电脑**：触摸拖拽、长按查看详情，推荐横屏；设置里可以调低画质。
+- **한 판의 전체 진행**: 이번 판 정보 확인 → 전략 선택(40개 전략) → 14라운드 → 칭호 정산. 위험 난이도 이상에서 조건을 만족하면 15라운드 「비밀 핵심」으로 진입합니다.
+- **4가지 난이도**: 표준 / 위험 / 절망 / 궁극. 싱글과 동맹에 각각 별도의 파라미터가 적용되며 모두 공식 데이터를 기반으로 합니다.
+- **정비 기간**: 모집, 새로고침, 동결, 지휘 센터 업그레이드. 정비 구역과 임시 정비 구역이 있으며, 정비 구역에서 체스판으로 드래그하여 배치하고 **방향 휠**로 방향을 선택합니다. 동맹 시뮬레이션에서는 카드 풀이 공유됩니다.
+- **정예 승급**: 같은 오퍼레이터 3명을 자동으로 합성하여 정예로 만들고, 한 단계 높은 등급의 무료 모집을 한 번 얻습니다.
+- **오퍼레이터 및 편성**: 모집 가능한 오퍼레이터 112명(+ 정예)과 그들의 스킬, 재능 및 특성을 지원합니다. 게임 시작 전에 각 오퍼레이터가 사용할 스킬(총 283개 스킬을 모두 수작업으로 구현)과 정예의 모듈을 선택할 수 있습니다.
+- **맹약 및 중첩**: 23개의 맹약(8개 세력 핵심 맹약 + 추가 맹약)을 지원합니다. 중첩 수는 한 판 전체에서 유지되며, 각 맹약은 최대 999중첩입니다.
+- **장비 및 기변**: 장비와 주문을 사용하며, 같은 이름의 장비를 합성하고 특정 조합으로 맹약 효과를 부여할 수 있습니다. 이미 장착한 장비는 오퍼레이터에게 귀속됩니다. 일부 라운드 시작 전에는 기변 카드(장비, 자금, 오퍼레이터, 중첩, 현상금 등)를 선택할 수 있습니다.
+- **자동 전투**: 스킬은 공식 「스킬 전략」에 따라 자동으로 발동합니다. 접촉 반경에 따라 저지하며, 저지 중인 오퍼레이터가 쓰러지면 접촉 중인 다른 오퍼레이터가 대신합니다. 원소 피해와 원소 폭발을 지원하며, 소환물은 플레이어가 직접 배치합니다. 밀치기 / 당기기는 힘과 무게를 기준으로 계산하고, 쓰러진 오퍼레이터는 그 자리에 남아 재배치 대기 시간을 표시합니다.
+- **지형 및 적**: 방벽, 사격대, 오리지늄 유체 송풍기, 늪, 배기 그릴, 만조 등의 지형 장치를 지원합니다. 공중 및 지면 근처 부유 적, 현상금 적도 포함됩니다.
+- **공동 방어**: 한 사람이 적을 놓치고 다른 사람이 완벽 작전을 달성한 경우, 완벽 작전을 달성한 팀원이 자신의 편성과 함께 놓친 적을 가로막으러 갑니다.
+- **최종 공세 및 비밀 핵심**: 두 사람이 하나의 전장을 공유하며, 모든 팀원이 하나의 리더 체력 게이지를 함께 감소시킵니다. 10명의 적 리더와 약 5×3칸의 피격 범위를 가진 거대 리더, 그리고 공식 제한 피해 규칙을 지원합니다.
+- **정산 칭호**: 위수의 별, 불멸의 맹약, 견고부동 등을 포함한 6개의 칭호.
+- **접속 끊김 후 재접속**: 동맹 시뮬레이션은 접속이 끊긴 후 10분 이내에 페이지를 다시 열면 원래 자리로 돌아갈 수 있습니다. 접속이 끊긴 동안에는 기존 편성으로 자동 전투를 진행하며, 「잠시 자리 비우기」를 선택해 AI에게 맡길 수도 있습니다. 싱글 시뮬레이션은 24시간 이내에 같은 브라우저에서 돌아와 계속할 수 있습니다.
+- **상호작용 세부 사항**: 적을 놓치면 상단의 목표 생명력이 실시간으로 감소합니다(최종 수치는 정산 시 확정). 선택, 드래그 앤 드롭, 장비 배치는 모두 바닥의 격자를 기준으로 합니다. 구매, 업그레이드 및 기변 카드 선택은 두 번 클릭하여 확인해야 합니다. 플레이어가 한 명뿐인 경우 전투 외에는 시간이 흐르지 않습니다.
+- **그래픽 및 사운드**: 실제 Spine 캐릭터, 공식 BGM 및 효과음, 이모트(6세트 × 6개), 전투 효과를 지원합니다. 선택적으로 공식 3D 체스판을 사용할 수 있습니다(로컬 클라이언트에서 텍스처를 추출해야 합니다).
+- **모바일 및 PC**: 터치 드래그와 길게 눌러 상세 정보 보기를 지원하며, 가로 화면을 권장합니다. 설정에서 그래픽 품질을 낮출 수 있습니다.
 
-## 快速开始
+## 빠른 시작
 
-### 方式一：整合包（推荐）
+### 방법 1: 통합 패키지 (권장)
 
-整合包里已经包含代码、运行依赖和全部美术 / 音频（含官方 3D 棋盘贴图），解压就能玩，不需要再下载任何东西。
+통합 패키지에는 코드, 실행에 필요한 의존성 및 모든 미술 / 오디오 소재(공식 3D 체스판 텍스처 포함)가 이미 들어 있으므로 압축을 풀기만 하면 바로 플레이할 수 있으며, 별도로 다운로드할 필요가 없습니다.
 
-1. **安装 Node.js 22 或 24（LTS）**
-   - Windows：在 PowerShell 里运行 `winget install OpenJS.NodeJS.LTS`，或到 <https://nodejs.org/zh-cn/download> 下载安装包。
-   - macOS：`brew install node@22`，或到官网下载安装包。
-   - Linux：发行版的包管理器、nvm 或 fnm。
-2. **下载**：在 [Releases](../../releases/latest) 页面下载最新版本（v0.1.1）的整合包（zip），解压到一个路径较短的文件夹（Windows 上建议不要放在 OneDrive 同步的目录里）。
-3. **启动**
-   - Windows：双击 **`scripts\start-windows.bat`**。如果弹出「安全警告」，点「运行」；Windows 防火墙弹窗请勾选「专用网络」并允许。
-   - macOS / Linux：在解压出的文件夹里运行 `./scripts/start.sh`（或 `bash scripts/start.sh`）。
-4. 浏览器会自动打开 `http://localhost:3000`。窗口里列出的局域网地址可以直接发给同一网络的朋友。关闭窗口（或按 `Ctrl+C`）即停止服务器。
+1. **Node.js 22 또는 24 (LTS) 설치**
+   - Windows: PowerShell에서 `winget install OpenJS.NodeJS.LTS`를 실행하거나 <https://nodejs.org/zh-cn/download>에서 설치 프로그램을 다운로드합니다.
+   - macOS: `brew install node@22`를 실행하거나 공식 웹사이트에서 설치 프로그램을 다운로드합니다.
+   - Linux: 배포판의 패키지 관리자, nvm 또는 fnm을 사용합니다.
+2. **다운로드**: [Releases](../../releases/latest) 페이지에서 최신 버전(v0.1.1)의 통합 패키지(zip)를 다운로드하고, 경로가 짧은 폴더에 압축을 풉니다(Windows에서는 OneDrive 동기화 폴더에 넣지 않는 것을 권장합니다).
+3. **실행**
+   - Windows: **`scripts\start-windows.bat`**를 더블 클릭합니다. 「보안 경고」가 표시되면 「실행」을 클릭합니다. Windows 방화벽 팝업에서는 「개인 네트워크」를 선택하고 허용합니다.
+   - macOS / Linux: 압축을 푼 폴더에서 `./scripts/start.sh`(또는 `bash scripts/start.sh`)를 실행합니다.
+4. 브라우저가 자동으로 `http://localhost:3000`을 엽니다. 창에 표시된 LAN 주소를 같은 네트워크의 친구에게 바로 공유할 수 있습니다. 창을 닫거나 `Ctrl+C`를 누르면 서버가 중지됩니다.
 
-### 方式二：从源码运行
+### 방법 2: 소스 코드에서 실행
 
 ```bash
 git clone https://github.com/sganggs/Stronghold-Protocol.git
@@ -84,98 +84,98 @@ npm run setup      # 检查环境，并从公开镜像下载约 250 MB 美术 / 
 npm start          # 启动服务器：http://localhost:3000
 ```
 
-也可以直接运行启动脚本（Windows `scripts\start-windows.bat`，macOS / Linux `scripts/start.sh`）：首次会自动安装依赖、下载素材，然后启动服务器并打开浏览器。
+시작 스크립트(Windows `scripts\start-windows.bat`, macOS / Linux `scripts/start.sh`)를 직접 실행할 수도 있습니다. 처음 실행할 때 자동으로 의존성을 설치하고 소재를 다운로드한 뒤 서버를 시작하고 브라우저를 엽니다.
 
-- **官方 3D 棋盘**需要从本机的《明日方舟》PC 客户端提取贴图（Windows 原生客户端、macOS 的 CrossOver 或 PlayCover）。`npm run setup` 检测到客户端时会询问是否提取（需要 Python 3.8+，依赖装在项目内的 `.venv-extract`，不影响系统）；之后可以用 `node tools/setup.mjs --local` 重新提取，或用 `--game "<…/StreamingAssets/AB/Windows>"` 指定路径。没有客户端时自动使用 2D 棋盘，其他功能不受影响。
-- 素材下载优先使用 GitHub，失败时自动改用 jsDelivr 镜像。
-- `npm run doctor`（即 `node tools/doctor.mjs`）可以随时诊断：Node 版本、素材是否完整、端口占用、局域网地址和防火墙。
+- **공식 3D 체스판**은 로컬 《명일방주》 PC 클라이언트에서 텍스처를 추출해야 합니다(Windows 네이티브 클라이언트, macOS의 CrossOver 또는 PlayCover). `npm run setup`이 클라이언트를 감지하면 추출 여부를 묻습니다(Python 3.8+ 필요, 의존성은 프로젝트 내부의 `.venv-extract`에 설치되어 시스템에는 영향을 주지 않음). 이후 `node tools/setup.mjs --local`로 다시 추출하거나 `--game "<…/StreamingAssets/AB/Windows>"`로 경로를 지정할 수 있습니다. 클라이언트가 없으면 자동으로 2D 체스판을 사용하며, 다른 기능에는 영향을 주지 않습니다.
+- 소재 다운로드는 GitHub를 우선 사용하며, 실패하면 자동으로 jsDelivr 미러로 전환합니다.
+- `npm run doctor`(즉 `node tools/doctor.mjs`)를 언제든 실행하여 Node 버전, 소재의 완전성, 포트 사용 여부, LAN 주소 및 방화벽을 진단할 수 있습니다.
 
-### 系统要求
+### 시스템 요구 사항
 
-| 项目 | 要求 |
+| 항목 | 요구 사항 |
 |---|---|
-| 开服的电脑 | Windows / macOS / Linux，Node.js 22 或 24（LTS）；磁盘约 400–500 MB（素材、依赖与可选的本地提取贴图）；内存空闲约 100 MB，每局再加几 MB |
-| 玩家 | 支持 WebGL 的现代浏览器（Chrome / Edge / Firefox / Safari 最新版），电脑、手机或平板（横屏） |
-| 网络 | 首次进入游戏时，每位玩家要从开服的电脑下载几十 MB 素材（之后走浏览器缓存）；对局中流量很小 |
+| 서버를 실행하는 컴퓨터 | Windows / macOS / Linux, Node.js 22 또는 24 (LTS); 디스크 약 400–500 MB(소재, 의존성 및 선택적 로컬 추출 텍스처); 여유 메모리 약 100 MB, 게임 한 판당 몇 MB 추가 |
+| 플레이어 | WebGL을 지원하는 최신 브라우저(Chrome / Edge / Firefox / Safari 최신 버전), PC·휴대폰·태블릿(가로 화면) |
+| 네트워크 | 게임에 처음 접속할 때 각 플레이어가 서버 컴퓨터에서 수십 MB의 소재를 다운로드합니다(이후에는 브라우저 캐시 사용). 게임 중 네트워크 트래픽은 매우 적습니다. |
 
-显卡较弱时可以在「设置」里调低画质，或在网址后加 `?board=2d`（强制 2D 棋盘）/ `?render=fallback`（不用 WebGL 的简化画面）。
+그래픽 카드가 약한 경우 「설정」에서 화질을 낮추거나 URL 뒤에 `?board=2d`(2D 체스판 강제 사용) / `?render=fallback`(WebGL을 사용하지 않는 간소화 화면)를 추가할 수 있습니다.
 
-### 端口与配置
+### 포트 및 설정
 
-默认监听 **TCP 3000**。换端口：启动脚本加 `--port 3001`，或设置环境变量 `PORT`。
+기본적으로 **TCP 3000** 포트를 수신합니다. 포트를 변경하려면 시작 스크립트에 `--port 3001`을 추가하거나 환경 변수 `PORT`를 설정합니다.
 
-| 环境变量 | 默认 | 说明 |
+| 환경 변수 | 기본값 | 설명 |
 |---|---|---|
-| `PORT` | `3000` | 监听端口 |
-| `HOST` | `0.0.0.0` | 监听地址（`127.0.0.1` = 只允许本机，放在反向代理后面时使用） |
-| `SP_COMBAT` | `client` | `client`：各玩家浏览器模拟自己的战斗（服务器负载极低）；`server`：由服务器模拟并推流 |
-| `SP_VERIFY` | `off` | 服务器复算客户端上报的战斗结果：`off` / `sample`（约 1/8 抽查）/ `all`（全部复算，更耗 CPU） |
-| `TRUST_PROXY` | `auto` | 是否信任 `X-Forwarded-For` 等转发头：`auto` 只信任来自本机 / 内网的代理；`1` 总是；`0` 从不 |
-| `DEBUG` | 空 | 设为任意值输出详细日志 |
-| `SP_NO_BROWSER` | 空 | 设为 `1` 时启动脚本不自动打开浏览器 |
+| `PORT` | `3000` | 수신 포트 |
+| `HOST` | `0.0.0.0` | 수신 주소 (`127.0.0.1` = 로컬 컴퓨터만 허용, 리버스 프록시 뒤에서 사용할 때) |
+| `SP_COMBAT` | `client` | `client`: 각 플레이어의 브라우저에서 자신의 전투를 시뮬레이션(서버 부하가 매우 낮음); `server`: 서버에서 시뮬레이션하여 스트리밍 |
+| `SP_VERIFY` | `off` | 서버가 클라이언트에서 보고한 전투 결과를 재계산: `off` / `sample`(약 1/8 무작위 검사) / `all`(전체 재계산, CPU 사용량 증가) |
+| `TRUST_PROXY` | `auto` | `X-Forwarded-For` 등의 전달 헤더를 신뢰할지 여부: `auto`는 로컬 / 내부 네트워크에서 온 프록시만 신뢰; `1`은 항상; `0`은 절대 신뢰하지 않음 |
+| `DEBUG` | 비어 있음 | 임의의 값으로 설정하면 상세 로그 출력 |
+| `SP_NO_BROWSER` | 비어 있음 | `1`로 설정하면 시작 스크립트가 브라우저를 자동으로 열지 않음 |
 
-设置方式：macOS / Linux `PORT=8080 npm start`；PowerShell `$env:PORT=8080; npm start`；cmd `set "PORT=8080" && npm start`。健康检查：`GET /healthz`。
+설정 방법: macOS / Linux `PORT=8080 npm start`; PowerShell `$env:PORT=8080; npm start`; cmd `set "PORT=8080" && npm start`. 상태 확인: `GET /healthz`.
 
-### 和朋友一起玩（局域网）
+### 친구와 함께 플레이 (LAN)
 
-1. 打开页面 → 输入昵称 → **同盟模拟** → 创建房间。房主选择难度，可以添加 / 移除 AI 队友。
-2. 把 4 位字母的**同盟密钥**，或「复制链接」得到的 `http://<地址>:3000/?room=密钥` 发给朋友。
-3. 所有人点「准备就绪」后房主开始。
-4. 同一 Wi-Fi / 路由器下的朋友打开启动窗口里列出的地址（形如 `http://192.168.x.x:3000`）即可。打不开时多半是防火墙：Windows 首次启动时在弹窗中允许「专用网络」，或运行 `npm run doctor` 查看具体命令；访客 Wi-Fi 常开启「AP 隔离」，也会导致连不上。
+1. 페이지를 열고 → 닉네임 입력 → **동맹 시뮬레이션** → 방 만들기를 선택합니다. 방장이 난이도를 선택하고 AI 팀원을 추가 / 제거할 수 있습니다.
+2. 4자리 영문 **동맹 키** 또는 「링크 복사」로 얻은 `http://<주소>:3000/?room=키`를 친구에게 공유합니다.
+3. 모두가 「준비 완료」를 누르면 방장이 시작합니다.
+4. 같은 Wi-Fi / 라우터에 연결된 친구는 시작 창에 표시된 주소(예: `http://192.168.x.x:3000`)를 열면 됩니다. 열리지 않는 경우 대부분 방화벽 문제입니다. Windows 최초 실행 시 팝업에서 「개인 네트워크」를 허용하거나 `npm run doctor`를 실행하여 구체적인 명령을 확인하십시오. 게스트 Wi-Fi에서는 「AP 격리」가 활성화되어 있어 접속할 수 없는 경우도 있습니다.
 
-刷新页面或断线后，同盟模拟 10 分钟内、独立模拟 24 小时内重新打开即可回到原座位。服务器把房间和对局都保存在内存里，**重启服务器会结束所有对局**。
+페이지를 새로 고치거나 접속이 끊긴 경우, 동맹 시뮬레이션은 10분 이내, 싱글 시뮬레이션은 24시간 이내에 다시 열면 원래 자리로 돌아갈 수 있습니다. 서버는 방과 게임을 메모리에 저장하므로 **서버를 재시작하면 모든 게임이 종료됩니다**.
 
-## 联机方式
+## 온라인 플레이 방법
 
-朋友不在同一个局域网时，下面是几类常见做法，按自己的情况选一种即可。这里只做简单介绍，提到的工具和服务只是举例，本项目与它们没有任何关系，也不做推荐；具体的安装、费用和使用规则请以各自的官方说明为准。部署细节（防火墙、开机自启、反向代理与 HTTPS、Docker）见 **[docs/DEPLOY.md](docs/DEPLOY.md)**。
+친구가 같은 LAN에 있지 않은 경우 아래와 같은 일반적인 방법을 사용할 수 있습니다. 자신의 상황에 맞는 방법을 하나 선택하면 됩니다. 여기서는 간단한 소개만 제공하며, 언급된 도구와 서비스는 예시일 뿐 본 프로젝트와 아무런 관계가 없고 추천하는 것도 아닙니다. 구체적인 설치, 비용 및 사용 규칙은 각 서비스의 공식 안내를 따르십시오. 배포 세부 사항(방화벽, 부팅 시 자동 실행, 리버스 프록시 및 HTTPS, Docker)은 **[docs/DEPLOY.md](docs/DEPLOY.md)**를 참조하십시오.
 
-| 方式 | 怎么做 | 适合 |
+| 방법 | 방법 | 적합한 경우 |
 |---|---|---|
-| **同一局域网直连** | 把启动窗口里的局域网地址发给朋友 | 同一个家、宿舍或网吧 |
-| **组网工具（虚拟局域网）** | 例如 Tailscale、ZeroTier、EasyTier、蒲公英：开服的人和朋友都安装同一个工具并加入同一个网络，朋友用开服电脑的虚拟 IP 访问 `http://<虚拟 IP>:3000` | 固定的几个熟人；不暴露到公网。朋友也要装客户端，部分工具需要注册账号；跨地区时可能走中继而变慢 |
-| **内网穿透 / 隧道** | 只有开服的人运行客户端，朋友直接打开网址。例如自建的 frp（需要一台有公网 IP 的服务器）、Cloudflare 的 `cloudflared tunnel --url http://localhost:3000`（临时地址，每次启动都会变；国内访问延迟可能较高）、国内的樱花 frp 一类公共穿透服务（通常需要实名，大陆节点承载网页可能有备案要求） | 不想改路由器、没有公网 IP；免费线路带宽小时，首次加载素材会慢一些 |
-| **云服务器 / VPS 直接部署** | 在 VPS 上运行整合包，或用仓库自带的 `Dockerfile`；用 Caddy / Nginx 加上 HTTPS。选离玩家近、线路好的地区（面向大陆玩家时，境外机房要关注回程线路，否则晚高峰延迟可能很高；大陆服务器绑定域名需要 ICP 备案） | 想长期开服、玩家分布在不同地区 |
+| **같은 LAN 직접 연결** | 시작 창의 LAN 주소를 친구에게 공유 | 같은 집, 기숙사 또는 PC방 |
+| **네트워크 구성 도구(가상 LAN)** | 예: Tailscale, ZeroTier, EasyTier, 蒲公英. 서버를 여는 사람과 친구가 같은 도구를 설치하고 같은 네트워크에 가입한 뒤, 친구가 서버 컴퓨터의 가상 IP로 `http://<가상 IP>:3000`에 접속 | 정해진 몇 명의 지인과 플레이할 때; 인터넷에 직접 노출하지 않음. 친구도 클라이언트를 설치해야 하며 일부 도구는 계정 등록이 필요합니다. 지역이 멀 경우 릴레이를 거쳐 느려질 수 있음 |
+| **NAT 통과 / 터널** | 서버를 여는 사람만 클라이언트를 실행하고 친구는 URL을 바로 엽니다. 예: 직접 구축한 frp(공인 IP 서버 필요), Cloudflare의 `cloudflared tunnel --url http://localhost:3000`(임시 주소이며 실행할 때마다 변경됨; 중국 내 접속 시 지연이 높을 수 있음), 중국의 Sakura frp와 같은 공개 터널 서비스(일반적으로 실명 인증이 필요하며 중국 본토 노드에서 웹페이지를 제공할 경우 ICP 등록 요구 사항이 있을 수 있음) | 라우터를 변경하고 싶지 않거나 공인 IP가 없는 경우. 무료 회선은 대역폭이 제한적이며 처음 소재를 로드할 때 느릴 수 있음 |
+| **클라우드 서버 / VPS 직접 배포** | VPS에서 통합 패키지를 실행하거나 저장소에 포함된 `Dockerfile`을 사용합니다. Caddy / Nginx로 HTTPS를 추가합니다. 플레이어와 가깝고 회선이 좋은 지역을 선택하십시오(중국 본토 플레이어를 대상으로 할 경우 해외 데이터센터의 귀환 경로에 주의해야 하며, 그렇지 않으면 저녁 피크 시간대에 지연이 매우 높아질 수 있음; 중국 본토 서버에 도메인을 연결하려면 ICP 등록이 필요함) | 장기간 서버를 운영하고 플레이어가 서로 다른 지역에 분포한 경우 |
 
-通用注意事项：
+일반적인 주의 사항:
 
-- 游戏是**单个常驻 Node.js 进程 + WebSocket**（路径 `/ws`），只能跑一个实例，必须部署在域名根路径；Vercel 之类的 Serverless 平台和 GitHub Pages 之类的静态托管都不适用。反向代理要转发 WebSocket 升级。
-- 游戏没有账号系统，**知道地址的人都能进来**。请只把地址发给朋友，不要公开发布，也不要搭建公开大厅；这同时能降低素材版权方面的风险。
-- 有公网 IPv4 时也可以在路由器上做端口转发，但这会把家里的电脑直接暴露在公网上，优先考虑上面的方式。
+- 게임은 **단일 상주 Node.js 프로세스 + WebSocket**(`/ws` 경로)로 구성되며 하나의 인스턴스만 실행할 수 있고 도메인 루트 경로에 배포해야 합니다. Vercel과 같은 Serverless 플랫폼이나 GitHub Pages와 같은 정적 호스팅은 사용할 수 없습니다. 리버스 프록시는 WebSocket 업그레이드를 전달해야 합니다.
+- 게임에는 계정 시스템이 없으므로 **주소를 아는 사람은 누구나 접속할 수 있습니다**. 주소는 친구에게만 공유하고 공개적으로 게시하거나 공개 로비를 만들지 마십시오. 이는 소재 저작권과 관련된 위험도 낮출 수 있습니다.
+- 공인 IPv4가 있다면 라우터에서 포트 포워딩을 설정할 수도 있지만, 이는 집의 컴퓨터를 인터넷에 직접 노출시키므로 위의 방법을 우선 고려하십시오.
 
-## 操作
+## 조작
 
-| 操作 | 方法 |
+| 조작 | 방법 |
 |---|---|
-| 购买 / 升级调度中心 / 机变选卡 | 点一次选中，再点一次确认（`D` 升级） |
-| 部署 / 移动干员 | 从整备区拖到棋盘格 → 出现方向轮盘 → 往上 / 右 / 下 / 左滑动选择朝向后松手；松在中心或点「✕ 点击取消」取消。拖动时模型在指针 / 手指下，指针所在的格子就是落点 |
-| 调整朝向 | 把干员拖回它自己的格子，再选方向 |
-| 出售 / 撤退 / 销毁装备 | 点击单位所在的格子 → 底部按钮「出售 +1」「撤退」；也可以把棋盘上的干员拖回整备区撤退。整备区里的装备与法术只能「销毁」，已配发的装备锁定在干员身上（干员出售或合成精锐时退回整备区） |
-| 装备 | 把装备拖到干员所在的格子上（每人 2 件；满了会弹出替换窗口，被替换的一件会被销毁）；法术拖到地块上并选方向 |
-| 查看详情 | 右键或长按单位 / 卡牌（属性为实时数值，高于基础值为绿色、低于为红色） |
-| 快捷键 | `R` 刷新 · `F` 冻结 · `D` 升级 · `Space` 准备就绪 · `Esc` 取消 / 关闭 |
-| 方向轮盘键盘操作 | 方向键预览 · `Enter` 确认 · `Esc` 取消 |
-| 暂停（独立模拟） | 作战中（含最终攻势 / 隐秘核心）点顶栏的「暂停」或按 `Space`，再点「继续作战」（或 `Space`）继续；同盟模拟的作战不能暂停 |
-| 表情 | 左下角「交流」，左右滑动（或方向键）换主题，冷却 1 秒 |
-| 观战 | 自己的作战结束后（或休整期）点左侧队友头像 →「前往查看」 |
+| 구매 / 지휘 센터 업그레이드 / 기변 카드 선택 | 한 번 클릭하여 선택하고 다시 한 번 클릭하여 확인 (`D` 업그레이드) |
+| 오퍼레이터 배치 / 이동 | 정비 구역에서 체스판 칸으로 드래그 → 방향 휠 표시 → 위 / 오른쪽 / 아래 / 왼쪽으로 슬라이드하여 방향을 선택한 뒤 놓습니다. 중앙에서 놓거나 「✕ 클릭하여 취소」를 누르면 취소됩니다. 드래그 중 모델은 포인터 / 손가락 아래에 표시되며 포인터가 있는 칸이 배치 위치입니다. |
+| 방향 조정 | 오퍼레이터를 자신의 칸으로 다시 드래그한 뒤 방향을 선택합니다. |
+| 판매 / 철수 / 장비 파괴 | 유닛이 있는 칸을 클릭 → 하단 버튼 「판매 +1」「철수」. 체스판의 오퍼레이터를 정비 구역으로 드래그하여 철수할 수도 있습니다. 정비 구역의 장비와 주문은 「파괴」만 가능하며, 이미 장착된 장비는 오퍼레이터에게 귀속됩니다(오퍼레이터를 판매하거나 정예로 합성하면 정비 구역으로 돌아옵니다). |
+| 장비 | 장비를 오퍼레이터가 있는 칸으로 드래그합니다(1인당 2개. 가득 차면 교체 창이 나타나며 교체된 장비는 파괴됩니다). 주문은 지형으로 드래그한 뒤 방향을 선택합니다. |
+| 상세 정보 보기 | 유닛 / 카드를 우클릭하거나 길게 누릅니다(능력치는 실시간 수치이며 기본값보다 높으면 녹색, 낮으면 빨간색으로 표시됩니다). |
+| 단축키 | `R` 새로고침 · `F` 동결 · `D` 업그레이드 · `Space` 준비 완료 · `Esc` 취소 / 닫기 |
+| 방향 휠 키보드 조작 | 방향키로 미리 보기 · `Enter` 확인 · `Esc` 취소 |
+| 일시정지 (싱글 시뮬레이션) | 전투 중(최종 공세 / 비밀 핵심 포함) 상단의 「일시정지」를 클릭하거나 `Space`를 누른 뒤, 「전투 계속」(또는 `Space`)을 눌러 계속합니다. 동맹 시뮬레이션의 전투는 일시정지할 수 없습니다. |
+| 이모트 | 왼쪽 아래의 「교류」를 누르고 좌우로 슬라이드(또는 방향키)하여 테마를 변경합니다. 재사용 대기 시간은 1초입니다. |
+| 관전 | 자신의 전투가 끝난 후(또는 정비 기간) 왼쪽의 팀원 아바타를 클릭 → 「보러 가기」 |
 
-完整的规则、数值和小技巧见 **[docs/PLAYING.md](docs/PLAYING.md)**（游戏内左下角也有「玩法说明」）。
+전체 규칙, 수치 및 팁은 **[docs/PLAYING.md](docs/PLAYING.md)**를 참조하십시오(게임 내 왼쪽 아래에도 「게임플레이 설명」이 있습니다).
 
-## 文档
+## 문서
 
-| 文档 | 内容 |
+| 문서 | 내용 |
 |---|---|
-| [CHANGELOG.md](CHANGELOG.md) | 更新记录：每个版本修复了什么、哪些反馈经核实不是问题 |
-| [docs/PLAYING.md](docs/PLAYING.md) | 玩法指南：流程、经济、招募与晋升、摆阵、联防、盟约、最终攻势、结算称号 |
-| [docs/DEPLOY.md](docs/DEPLOY.md) | 部署指南：Windows 开服与开机自启、防火墙、组网 / 隧道、反向代理与 HTTPS、Docker、systemd、排错 |
-| [docs/DESIGN.md](docs/DESIGN.md) | 架构与契约（英文）：技术栈、目录分工、网络协议、渲染与 UI、各次试玩后的规则修订 |
-| [docs/SIM.md](docs/SIM.md) | 战斗模拟引擎参考（英文）：钩子、技能描述格式、职业默认行为 |
-| [docs/META.md](docs/META.md) | 对局与经济引擎（英文）：回合流程、商店、联防、最终攻势的实现细节 |
-| [docs/DATA.md](docs/DATA.md) | 由官方数据表生成的游戏数据（英文） |
-| [docs/ASSETS.md](docs/ASSETS.md) | 素材来源、目录结构与清单（英文） |
-| [docs/BALANCE.md](docs/BALANCE.md) | 难度模型与测量（英文） |
-| [docs/research/](docs/research/00-INDEX.md) | 官方规则、数据与界面的调研记录 |
+| [CHANGELOG.md](CHANGELOG.md) | 변경 기록: 각 버전에서 수정된 사항과 확인 결과 문제가 아니었던 피드백 |
+| [docs/PLAYING.md](docs/PLAYING.md) | 게임플레이 가이드: 진행 과정, 경제, 모집 및 승급, 진형 구성, 공동 방어, 맹약, 최종 공세, 정산 칭호 |
+| [docs/DEPLOY.md](docs/DEPLOY.md) | 배포 가이드: Windows 서버 실행 및 부팅 시 자동 실행, 방화벽, 네트워크 구성 / 터널, 리버스 프록시 및 HTTPS, Docker, systemd, 문제 해결 |
+| [docs/DESIGN.md](docs/DESIGN.md) | 아키텍처 및 계약(영문): 기술 스택, 디렉터리 역할, 네트워크 프로토콜, 렌더링 및 UI, 각 테스트 플레이 후 규칙 수정 사항 |
+| [docs/SIM.md](docs/SIM.md) | 전투 시뮬레이션 엔진 참고(영문): 훅, 스킬 설명 형식, 직군 기본 행동 |
+| [docs/META.md](docs/META.md) | 게임 및 경제 엔진(영문): 라운드 진행, 상점, 공동 방어, 최종 공세의 구현 세부 사항 |
+| [docs/DATA.md](docs/DATA.md) | 공식 데이터 테이블에서 생성된 게임 데이터(영문) |
+| [docs/ASSETS.md](docs/ASSETS.md) | 소재 출처, 디렉터리 구조 및 목록(영문) |
+| [docs/BALANCE.md](docs/BALANCE.md) | 난이도 모델 및 측정(영문) |
+| [docs/research/](docs/research/00-INDEX.md) | 공식 규칙, 데이터 및 인터페이스 조사 기록 |
 
-## 开发与测试
+## 개발 및 테스트
 
 ```bash
 npm run dev                 # node --watch：改动服务器代码后自动重启
@@ -185,54 +185,54 @@ SP_REAL_E2E=1 node --test test/ui/real.e2e.test.js   # 需要 Chrome + 已下载
 RENDER_E2E=1 node --test 'test/render/*.browser.test.js'   # 渲染测试，部分需要本地提取的棋盘贴图
 ```
 
-- 游戏数据由 `npm run build-data`（`tools/build-data.mjs`）从官方数据表生成，不要手工修改 `data/*.json`。
-- GitHub Actions（[.github/workflows/ci.yml](.github/workflows/ci.yml)）在 Ubuntu 与 Windows、Node 22 / 24 上运行 `npm ci`、`node --test` 和服务器冒烟测试。
+- 게임 데이터는 `npm run build-data`(`tools/build-data.mjs`)를 통해 공식 데이터 테이블에서 생성됩니다. `data/*.json`을 수동으로 수정하지 마십시오.
+- GitHub Actions([.github/workflows/ci.yml](.github/workflows/ci.yml))는 Ubuntu 및 Windows, Node 22 / 24에서 `npm ci`, `node --test` 및 서버 스모크 테스트를 실행합니다.
 
-## 项目结构
+## 프로젝트 구조
 
-| 路径 | 内容 |
+| 경로 | 내용 |
 |---|---|
-| `server/` | Node HTTP 静态服务 + WebSocket（`/ws`）、大厅、对局引擎（`match/`）、战斗模拟（`sim/`，浏览器与服务器共用） |
-| `shared/` | 前后端共用的常量与网络协议 |
-| `public/` | 浏览器客户端（原生 ES 模块，PixiJS + pixi-spine、three.js 3D 棋盘、Preact + htm UI） |
-| `data/` | 由官方数据表生成的游戏数据与素材清单 `assets.json` |
-| `tools/` | `setup.mjs` / `doctor.mjs`、素材下载 `fetch-assets.mjs`、数据构建、本地提取 `local-extract/` |
-| `scripts/` | 启动脚本（Windows / macOS / Linux）、Windows 开机自启 |
-| `docs/` | 文档与调研 |
-| `test/` | `node:test` 测试 |
+| `server/` | Node HTTP 정적 서비스 + WebSocket(`/ws`), 로비, 게임 엔진(`match/`), 전투 시뮬레이션(`sim/`, 브라우저와 서버가 공유) |
+| `shared/` | 프론트엔드와 백엔드가 공유하는 상수 및 네트워크 프로토콜 |
+| `public/` | 브라우저 클라이언트(네이티브 ES 모듈, PixiJS + pixi-spine, three.js 3D 체스판, Preact + htm UI) |
+| `data/` | 공식 데이터 테이블에서 생성된 게임 데이터 및 소재 목록 `assets.json` |
+| `tools/` | `setup.mjs` / `doctor.mjs`, 소재 다운로드 `fetch-assets.mjs`, 데이터 빌드, 로컬 추출 `local-extract/` |
+| `scripts/` | 시작 스크립트(Windows / macOS / Linux), Windows 부팅 시 자동 실행 |
+| `docs/` | 문서 및 조사 |
+| `test/` | `node:test` 테스트 |
 
-## 许可证
+## 라이선스
 
-- **代码**：本项目自己编写的代码以 **GPL-3.0-or-later** 发布，全文见 [LICENSE](LICENSE)；另附一条 GPL 第 7 条的附加许可，允许与 pixi-spine 中的 Spine Runtimes 组合分发（见 [NOTICE.md](NOTICE.md)）。
-- **游戏素材不在许可范围内**：《明日方舟》相关的美术、音乐、音效、文本与数据等版权归原权利人所有，不适用 GPL，使用限制见上方的[声明](#声明)和 [NOTICE.md](NOTICE.md)。
-- **第三方组件**各自遵循其许可证：通过 npm 安装的库（整合包的 `node_modules` 中附带各自的许可证文件）、`tools/local-extract/aklz4.py` 的算法（BSD-3-Clause），以及字体等，清单与许可证全文见 [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md)。
+- **코드**: 본 프로젝트에서 직접 작성한 코드는 **GPL-3.0-or-later**로 배포되며, 전문은 [LICENSE](LICENSE)를 참조하십시오. 또한 GPL 제7조에 대한 추가 허가가 제공되어 pixi-spine의 Spine Runtimes와 함께 배포할 수 있습니다([NOTICE.md](NOTICE.md) 참조).
+- **게임 소재는 라이선스 범위에 포함되지 않습니다**: 《명일방주》와 관련된 일러스트, 음악, 음향 효과, 텍스트 및 데이터 등의 저작권은 원 권리자에게 있으며 GPL이 적용되지 않습니다. 사용 제한은 위의 [고지사항](#고지사항) 및 [NOTICE.md](NOTICE.md)를 참조하십시오.
+- **제3자 구성 요소**는 각각의 라이선스를 따릅니다. npm을 통해 설치되는 라이브러리(통합 패키지의 `node_modules`에 각각의 라이선스 파일 포함), `tools/local-extract/aklz4.py`의 알고리즘(BSD-3-Clause), 글꼴 등은 [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md)에서 목록과 라이선스 전문을 확인할 수 있습니다.
 
-## 致谢与数据来源
+## 감사 및 데이터 출처
 
-- 游戏数据：[Kengxxiao/ArknightsGameData](https://github.com/Kengxxiao/ArknightsGameData)。
-- 素材来源：[yuanyan3060/ArknightsGameResource](https://github.com/yuanyan3060/ArknightsGameResource)、[fexli/ArknightsResource](https://github.com/fexli/ArknightsResource)、[isHarryh/Ark-Models](https://github.com/isHarryh/Ark-Models)、[ArknightsAssets/ArknightsAssets2](https://github.com/ArknightsAssets/ArknightsAssets2)；字体来自 [TimWangZi/The-font-of-Arknights](https://github.com/TimWangZi/The-font-of-Arknights) 与 Google Fonts（Noto Sans SC）。详见 [docs/ASSETS.md](docs/ASSETS.md)。
-- 规则核对参考：[PRTS 明日方舟中文 Wiki](https://prts.wiki/)。
-- LZ4AK 解包：`tools/local-extract/aklz4.py` 的算法来自 [isHarryh/Ark-Unpacker](https://github.com/isHarryh/Ark-Unpacker)（BSD-3-Clause，经 MooncellWiki/UnityPy）；解析 Unity 资源使用 [UnityPy](https://github.com/K0lb3/UnityPy)（MIT）。
-- 库：[PixiJS](https://pixijs.com/)（MIT）、[pixi-spine](https://github.com/pixijs/spine)（MIT；其中包含的 Spine Runtime 另受 [Spine Runtimes License](https://esotericsoftware.com/spine-runtimes-license) 约束）、[three.js](https://threejs.org/)（MIT）、[Preact](https://preactjs.com/) + [htm](https://github.com/developit/htm)（MIT）、[ws](https://github.com/websockets/ws)（MIT）。
+- 게임 데이터: [Kengxxiao/ArknightsGameData](https://github.com/Kengxxiao/ArknightsGameData).
+- 소재 출처: [yuanyan3060/ArknightsGameResource](https://github.com/yuanyan3060/ArknightsGameResource), [fexli/ArknightsResource](https://github.com/fexli/ArknightsResource), [isHarryh/Ark-Models](https://github.com/isHarryh/Ark-Models), [ArknightsAssets/ArknightsAssets2](https://github.com/ArknightsAssets/ArknightsAssets2). 글꼴은 [TimWangZi/The-font-of-Arknights](https://github.com/TimWangZi/The-font-of-Arknights) 및 Google Fonts(Noto Sans SC)에서 가져왔습니다. 자세한 내용은 [docs/ASSETS.md](docs/ASSETS.md)를 참조하십시오.
+- 규칙 확인 참고 자료: [PRTS 명일방주 중국어 Wiki](https://prts.wiki/).
+- LZ4AK 압축 해제: `tools/local-extract/aklz4.py`의 알고리즘은 [isHarryh/Ark-Unpacker](https://github.com/isHarryh/Ark-Unpacker)(BSD-3-Clause, MooncellWiki/UnityPy 경유)에서 가져왔으며, Unity 리소스 분석에는 [UnityPy](https://github.com/K0lb3/UnityPy)(MIT)를 사용합니다.
+- 라이브러리: [PixiJS](https://pixijs.com/)(MIT), [pixi-spine](https://github.com/pixijs/spine)(MIT; 포함된 Spine Runtime은 별도로 [Spine Runtimes License](https://esotericsoftware.com/spine-runtimes-license)의 적용을 받음), [three.js](https://threejs.org/)(MIT), [Preact](https://preactjs.com/) + [htm](https://github.com/developit/htm](MIT), [ws](https://github.com/websockets/ws)(MIT).
 
-感谢以上项目的作者与维护者，以及鹰角网络带来的这款游戏。
+위 프로젝트의 제작자와 유지보수자, 그리고 이 게임을 만들어 준 하이퍼그리프에 감사드립니다.
 
-## 贡献
+## 기여
 
-欢迎提 Issue 反馈 bug、与官方规则不一致的地方或改进建议，也欢迎提交 Pull Request：
+버그, 공식 규칙과 일치하지 않는 부분 또는 개선 제안은 Issue로 알려주시고, Pull Request 제출도 환영합니다:
 
-- 提交前请运行 `node --test`，并同步更新相关文档；文档使用简体中文，代码与注释使用英文。
-- 提交的代码将以 GPL-3.0-or-later 发布。
-- 请不要提交任何游戏素材文件（`public/assets/` 等目录已被 `.gitignore` 排除）。
-- 本项目坚持非商业：请不要提交广告、付费、打赏等任何形式的变现功能。
+- 제출 전에 `node --test`를 실행하고 관련 문서도 함께 업데이트하십시오. 문서는 중국어 간체, 코드와 주석은 영어를 사용합니다.
+- 제출된 코드는 GPL-3.0-or-later로 배포됩니다.
+- 게임 소재 파일은 제출하지 마십시오(`public/assets/` 등의 디렉터리는 `.gitignore`에서 제외되어 있습니다).
+- 본 프로젝트는 비상업적 원칙을 유지합니다. 광고, 유료 기능, 후원 등 어떠한 형태의 수익화 기능도 제출하지 마십시오.
 
 ---
 
-## English
+## 영문 요약
 
-An **unofficial, non-commercial fan remake** of Arknights' seasonal auto-chess tower-defense mode *Stronghold Protocol: Covenant*, played in the browser: solo, or 1–4 player co-op (AI teammates can fill seats). Combat is simulated in each player's browser, so a low-power PC can host.
+《명일방주》의 시즌 오토체스 타워 디펜스 모드 *Stronghold Protocol: Covenant*를 브라우저에서 플레이할 수 있도록 재현한 **비공식·비상업적 팬 메이드 작품**입니다. 싱글 플레이 또는 1–4인 협동을 지원하며(AI 팀원이 빈 자리를 채울 수 있음), 전투는 각 플레이어의 브라우저에서 시뮬레이션되므로 저전력 PC에서도 서버를 운영할 수 있습니다.
 
-- **Run:** download the all-in-one bundle from [Releases](../../releases/latest), install Node.js 22 or 24, then double-click `scripts\start-windows.bat` (Windows) or run `./scripts/start.sh` (macOS / Linux) and open <http://localhost:3000>. From source: `npm install && npm run setup && npm start` (setup downloads ~250 MB of art from public mirrors; the official 3D board needs a local Arknights client to extract, otherwise the 2D board is used).
-- **Play with friends:** create a co-op room and share the 4-letter key or the `?room=KEY` link. On a LAN, use the address printed at start; otherwise use a virtual-LAN tool, a tunnel or a VPS — see [docs/DEPLOY.md](docs/DEPLOY.md).
-- **Disclaimer:** not affiliated with or endorsed by Hypergryph or Yostar. All Arknights names, art, audio, text and data are © their respective owners and are **not** covered by this project's GPL licence. For study and personal non-commercial use only — no selling, paid distribution, paid servers or monetisation of any kind. Content will be removed on request of the rights holders. Provided "as is", without warranty.
-- **License:** code GPL-3.0-or-later ([LICENSE](LICENSE)); game assets excluded.
+- **실행**: [Releases](../../releases/latest)에서 통합 패키지를 다운로드하고 Node.js 22 또는 24를 설치한 다음 `scripts\start-windows.bat`(Windows)를 더블 클릭하거나 `./scripts/start.sh`(macOS / Linux)를 실행하고 <http://localhost:3000>을 엽니다. 소스 코드에서 실행하는 경우 `npm install && npm run setup && npm start`를 사용합니다(`setup`은 공개 미러에서 약 250 MB의 미술 소재를 다운로드하며, 공식 3D 체스판은 로컬 명일방주 클라이언트에서 추출해야 하고 그렇지 않으면 2D 체스판을 사용합니다).
+- **친구와 플레이**: 협동 방을 만들고 4자리 키 또는 `?room=KEY` 링크를 공유합니다. LAN에서는 시작 시 표시되는 주소를 사용하고, 그렇지 않으면 가상 LAN 도구, 터널 또는 VPS를 사용할 수 있습니다. 자세한 내용은 [docs/DEPLOY.md](docs/DEPLOY.md)를 참조하십시오.
+- **고지사항**: Hypergryph 또는 Yostar와 제휴하거나 이들의 승인을 받은 프로젝트가 아닙니다. 모든 명일방주 관련 명칭, 일러스트, 오디오, 텍스트 및 데이터의 저작권은 각 권리자에게 있으며 **본 프로젝트의 GPL 라이선스 적용 대상이 아닙니다**. 학습 및 개인적인 비상업적 사용만 허용되며 판매, 유료 배포, 유료 서버 또는 어떠한 형태의 수익화도 금지됩니다. 권리자의 요청이 있을 경우 관련 콘텐츠를 삭제합니다. 어떠한 보증 없이 "있는 그대로" 제공됩니다.
+- **라이선스**: 코드는 GPL-3.0-or-later ([LICENSE](LICENSE)); 게임 소재는 제외됩니다.
