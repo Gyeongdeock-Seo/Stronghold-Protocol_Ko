@@ -1,7 +1,5 @@
 # 위수 프로토콜: 맹약 · Stronghold Protocol: Covenant
 
-# 위수 프로토콜: 맹약 · Stronghold Protocol: Covenant
-
 《명일방주》의 시즌 오토체스 타워 디펜스 모드 「위수 프로토콜: 맹약」을 **비공식 팬 메이크로 재현한 작품**입니다. 브라우저에서 바로 플레이할 수 있으며, 싱글 플레이 또는 1–4인 온라인 협동을 지원합니다.
 
 ![version](https://img.shields.io/badge/version-0.1.2-2ea44f)
