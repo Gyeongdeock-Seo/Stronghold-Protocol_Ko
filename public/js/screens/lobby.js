@@ -308,7 +308,7 @@ export function LobbyScreen() {
           <div class="join-foot">
             ${recent.length ? html`<span class="t-lo">最近的同盟</span>
               ${recent.map((c) => html`<button key=${c} type="button" class="code-chip num" onClick=${() => { setCode(c); join(c); }}>${c}</button>`)}`
-              : html`<span class="t-dim">向同伴索取 ${ROOM_CODE_LEN} 位同盟密钥，或直接打开邀请链接</span>`}
+              : html`<span class="t-dim">${`向同伴索取 ${ROOM_CODE_LEN} 位同盟密钥，或直接打开邀请链接`}</span>`}
           </div>
         <//>
         <${TipsPanel} />

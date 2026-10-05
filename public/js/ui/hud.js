@@ -221,7 +221,7 @@ export function ReadyToggle({ priv, onToggle, busy, readyCount, total }) {
   return html`<div class="readywrap">
     ${reason ? html`<${Tooltip} text=${reason} placement="bottom">${btn}<//>` : btn}
     ${!ready && temp.count ? html`<span class="readywrap__why" id="readywrap-why" role="status" data-testid="ready-why">
-      <${Icon} name="warn" /><span>临时整备区 <b class="num">${temp.count}</b> 个单位待处理</span></span>` : null}
+      <${Icon} name="warn" /><span data-i18n-ctx="tempwarn">临时整备区 <b class="num">${temp.count}</b> 个单位待处理</span></span>` : null}
     ${Number.isFinite(total) && total > 1 ? html`<span class="readywrap__count">已就绪 <b class="num">${readyCount}</b>/<span class="num">${total}</span></span>` : null}
   </div>`;
 }

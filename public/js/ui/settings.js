@@ -42,7 +42,7 @@ function Toggle({ label, micro, value, onChange }) {
   return html`<div class="set-row">
     <span class="set-row__label">${label}<${MicroLabel}>${micro}<//></span>
     <button type="button" class=${`set-toggle${value ? ' is-on' : ''}`} role="switch" aria-checked=${value ? 'true' : 'false'}
-      onClick=${() => onChange(!value)}><i></i><span>${value ? '开启' : '关闭'}</span></button>
+      onClick=${() => onChange(!value)}><i></i><span data-i18n-ctx="toggle">${value ? '开启' : '关闭'}</span></button>
   </div>`;
 }
 

@@ -1239,7 +1239,7 @@ function MatchScreen() {
       <div class="gm__effects"><${EffectsList} effects=${priv?.effects} /></div>
 
       ${watchingOther && !combat ? html`<div class="gm__watching" role="status">
-        <${GIcon} name="eye" /><span>正在查看 <b>${watchedName}</b> 的阵地（只读）</span>
+        <${GIcon} name="eye" /><span data-i18n-ctx="watching">正在查看 <b>${watchedName}</b>的阵地（只读）</span>
         ${spectator ? null : html`<${Button} size="sm" variant="primary" icon="back" onClick=${() => watchPlayer({ playerId: myId })}>返回自己<//>`}
       </div>` : null}
 
