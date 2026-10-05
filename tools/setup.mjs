@@ -1,33 +1,34 @@
 #!/usr/bin/env node
-// tools/setup.mjs — prepare a fresh clone in one command (docs/DEPLOY.md).
+// tools/setup.mjs — 한 번의 명령어로 새로운 클론 환경을 준비합니다 (docs/DEPLOY.md).
 //
-//   node tools/setup.mjs [options]
+//   node tools/setup.mjs [옵션]
 //
-// Steps (each one is skipped when already done, so re-running is cheap — the start scripts run it on every start):
-//   1. Node.js ≥ 22 check (clear message + download link otherwise).
-//   2. Dependencies: `npm ci` (falls back to `npm install`) when node_modules is missing or incomplete.
-//   3. Client libraries in public/vendor (tools/vendor.mjs) when any is missing.
-//   4. Game data (data/*.json, committed) present and parseable.
-//   5. Art/audio (tools/fetch-assets.mjs, ~270 MB into public/assets, resumable, mirror fallback) when public/assets
-//      is missing or data/assets.json lists files that are not on disk. A failure is a warning: the game still runs
-//      with fallback visuals and the next run resumes.
-//   6. Optional: official board/UI art from a locally installed Arknights client (Windows native install, CrossOver
-//      bottle or PlayCover on macOS, or --game <dir>) with tools/local-extract/extract.py in a project-local Python
-//      venv (.venv-extract), then the board tile crops (tools/crop-board-atlas.mjs → tiles.json). Asked once on a
-//      terminal (the answer is remembered in .cache/setup-state.json; without a terminal it is skipped); never fatal.
+// 단계 (각 단계는 이미 완료된 경우 건너뛰므로 재실행 비용이 적습니다 — 시작 스크립트가 매 실행 시 호출함):
+//   1. Node.js ≥ 22 버전 확인 (미충족 시 명확한 메시지 + 다운로드 링크 제공).
+//   2. 의존성 패키지: node_modules가 없거나 불완전할 때 `npm ci` 실행 (`npm install`로 대체 가능).
+//   3. public/vendor 내 클라이언트 라이브러리 (tools/vendor.mjs) 누락 시 복사.
+//   4. 게임 데이터 (data/*.json, 커밋됨) 존재 및 파싱 가능 여부 확인.
+//   5. 리소스/오디오 (tools/fetch-assets.mjs, public/assets에 약 270MB, 이어받기 지원, 미러 대체) 
+//      public/assets가 없거나 data/assets.json에 명시된 파일이 디스크에 없을 때 다운로드. 
+//      실패 시 경고만 표시되며 게임은 대체 리소스로 실행되고 다음 실행 시 이어받습니다.
+//   6. 선택 사항: 로컬에 설치된 명일방주 클라이언트(Windows 기본 설치, macOS의 CrossOver
+//      또는 PlayCover, 또는 --game <디렉터리>)에서 tools/local-extract/extract.py를 사용해
+//      프로젝트 로컬 Python 가상환경(.venv-extract)에 공식 보드/UI 리소스 추출 후
+//      보드 타일 자르기 수행 (tools/crop-board-atlas.mjs → tiles.json). 터미널에서 한 번 물어봄
+//      (응답은 .cache/setup-state.json에 저장되며, 터미널이 없으면 건너뜀). 치명적 에러 없음.
 //
-// Options:
-//   --check          report only, change nothing (exit 1 when something essential is missing)
-//   --no-assets      skip the art/audio download
-//   --no-local       skip the local-client detection and extraction
-//   --local          extract from the local client without asking (re-extracts when already done)
-//   --game <dir>     AssetBundle root of the local client (…/StreamingAssets/AB/Windows or PlayCover …/Documents/Bundles)
-//   -y, --yes        answer "yes" to every question
-//   --quiet          fewer lines (used by scripts/launch.mjs)
+// 옵션:
+//   --check          상태만 보고하고 변경하지 않음 (필수 요소가 누락되면 종료 코드 1)
+//   --no-assets      리소스/오디오 다운로드 건너뛰기
+//   --no-local       로컬 클라이언트 감지 및 추출 건너뛰기
+//   --local          묻지 않고 로컬 클라이언트에서 추출 (이미 완료된 경우 재추출)
+//   --game <디렉터리> 로컬 클라이언트의 AssetBundle 루트 (…/StreamingAssets/AB/Windows 또는 PlayCover …/Documents/Bundles)
+//   -y, --yes        모든 질문에 "yes"로 응답
+//   --quiet          출력 줄 수 줄이기 (scripts/launch.mjs에서 사용)
 //   -h, --help
 //
-// Exit code: 0 = ready to `npm start` (optional parts may have been skipped), 1 = something essential is missing.
-// Helpers are exported for tools/doctor.mjs and scripts/launch.mjs; main() only runs when executed directly.
+// 종료 코드: 0 = `npm start` 실행 준비 완료 (선택 항목은 건너뛰었을 수 있음), 1 = 필수 요소 누락.
+// 헬퍼 함수는 tools/doctor.mjs 및 scripts/launch.mjs에 내보내지며, main()은 직접 실행될 때만 작동합니다.
 
 import fs from 'node:fs';
 import os from 'node:os';
@@ -40,14 +41,14 @@ export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '
 export const MIN_NODE = 22;
 export const IS_WIN = process.platform === 'win32';
 export const IS_MAC = process.platform === 'darwin';
-const NODE_URL = 'https://nodejs.org/zh-cn/download';
+const NODE_URL = 'https://nodejs.org/ko/download';
 
-/** Data files the server expects (server/data.js DATA_FILES) + the emote catalogue used by the client. */
+/** 서버가 필요로 하는 데이터 파일 (server/data.js DATA_FILES) + 클라이언트가 사용하는 이모티콘 카탈로그 */
 export const DATA_FILES = ['config', 'chess', 'bonds', 'garrisons', 'items', 'bands', 'effects', 'choices',
   'enemies', 'factions', 'waves', 'stages', 'bosses', 'tokens', 'assets', 'emotes'];
-/** Runtime packages that must be installed (package.json dependencies). */
+/** 반드시 설치되어야 하는 런타임 패키지 (package.json dependencies) */
 export const RUNTIME_PACKAGES = ['ws', 'pixi.js', 'pixi-spine', 'preact', 'htm'];
-/** Vendor files the client cannot run without (tools/vendor.mjs; three.js is optional there). */
+/** 클라이언트가 구동되기 위해 필수적인 벤더 파일 (tools/vendor.mjs; three.js는 선택 사항) */
 export const VENDOR_REQUIRED = ['pixi.min.js', 'pixi-spine.js', 'preact.module.js', 'hooks.module.js', 'htm.module.js'];
 export const VENDOR_OPTIONAL = ['three.core.js', 'three.module.js'];
 
@@ -60,7 +61,7 @@ const LOCAL_BOARD_ATLAS = path.join(ROOT, 'public', 'assets', 'local', 'map', 'a
 const LOCAL_BOARD_TILES = path.join(ROOT, 'public', 'assets', 'local', 'map', 'autochess', 'tiles.json');
 
 // ---------------------------------------------------------------------------------------------------
-// Small helpers
+// 헬퍼 함수
 // ---------------------------------------------------------------------------------------------------
 
 const color = process.stdout.isTTY && !process.env.NO_COLOR;
@@ -72,18 +73,18 @@ export const nodeMajor = () => Number(process.versions.node.split('.')[0]);
 const exists = (p) => { try { fs.accessSync(p); return true; } catch { return false; } };
 const readJson = (p) => { try { return JSON.parse(fs.readFileSync(p, 'utf8')); } catch { return null; } };
 const mb = (n) => `${(n / 1048576).toFixed(0)} MB`;
-/** Terminal display width (CJK / full-width characters take two columns). */
+/** 터미널 표시 너비 (CJK / 전각 문자는 2칸 차지) */
 export const displayWidth = (s) => [...String(s)].reduce((n, ch) => n + (ch.codePointAt(0) >= 0x2e80 ? 2 : 1), 0);
 export const padDisplay = (s, w) => s + ' '.repeat(Math.max(0, w - displayWidth(s)));
 
-/** Run a command with inherited stdio. `.cmd` shims (npm) need a shell on Windows (Node ≥ 18.20 refuses them otherwise). */
+/** 표준 입출력을 상속받아 명령어를 실행합니다. Windows의 `.cmd` 심(npm)은 쉘이 필요합니다. */
 function run(cmd, args, { cwd = ROOT, env, shell = false } = {}) {
   const r = spawnSync(cmd, args, { cwd, stdio: 'inherit', env: { ...process.env, ...env }, shell });
   if (r.error) return { ok: false, code: -1, error: r.error };
   return { ok: r.status === 0, code: r.status };
 }
 
-/** Run a command and capture its output (never throws). */
+/** 명령어를 실행하고 출력을 캡처합니다 (예외를 발생시키지 않음). */
 export function capture(cmd, args, { timeout = 15000, shell = false, env } = {}) {
   try {
     const r = spawnSync(cmd, args, { encoding: 'utf8', timeout, shell, windowsHide: true, env: env ? { ...process.env, ...env } : process.env });
@@ -94,7 +95,7 @@ export function capture(cmd, args, { timeout = 15000, shell = false, env } = {})
 }
 
 function npmCommand() {
-  const execPath = process.env.npm_execpath; // set when started through `npm run …`
+  const execPath = process.env.npm_execpath; // `npm run …`을 통해 시작되었을 때 설정됨
   if (execPath && /npm-cli\.js$/i.test(execPath) && exists(execPath)) return { cmd: process.execPath, pre: [execPath], shell: false };
   return { cmd: IS_WIN ? 'npm.cmd' : 'npm', pre: [], shell: IS_WIN };
 }
@@ -104,21 +105,21 @@ function saveState(patch) {
   try {
     fs.mkdirSync(path.dirname(STATE_FILE), { recursive: true });
     fs.writeFileSync(STATE_FILE, JSON.stringify({ ...loadState(), ...patch }, null, 1) + '\n');
-  } catch { /* best effort */ }
+  } catch { /* 최선 처리 */ }
 }
 
-/** Ask a yes/no question on a TTY (default on Enter / timeout = `def`). Non-TTY → null (nobody to ask). */
+/** TTY 환경에서 예/아니오 질문을 합니다 (Enter / 타임아웃 시 기본값 `def`). 비 TTY → null 반환. */
 async function ask(question, def, timeoutMs = 60000) {
   if (!process.stdin.isTTY || !process.stdout.isTTY) return null;
   const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
   const hint = def ? '[Y/n]' : '[y/N]';
   try {
     return await new Promise((resolve) => {
-      const t = setTimeout(() => { process.stdout.write(c.dim(`\n  (${timeoutMs / 1000} 秒无输入，按默认处理)\n`)); resolve(def); }, timeoutMs);
+      const t = setTimeout(() => { process.stdout.write(c.dim(`\n  (${timeoutMs / 1000}초 동안 입력이 없어 기본값으로 진행합니다)\n`)); resolve(def); }, timeoutMs);
       rl.question(`  ${question} ${hint} `, (a) => {
         clearTimeout(t);
         const s = String(a || '').trim().toLowerCase();
-        resolve(s === '' ? def : /^(y|yes|是|好|1)$/.test(s));
+        resolve(s === '' ? def : /^(y|yes|예|네|좋음|1)$/.test(s));
       });
     });
   } finally {
@@ -127,22 +128,22 @@ async function ask(question, def, timeoutMs = 60000) {
 }
 
 // ---------------------------------------------------------------------------------------------------
-// Checks (exported for tools/doctor.mjs)
+// 검사 항목 (tools/doctor.mjs용으로 내보냄)
 // ---------------------------------------------------------------------------------------------------
 
-/** Node.js version check. */
+/** Node.js 버전 검사 */
 export function checkNode() {
   const major = nodeMajor();
   return { ok: major >= MIN_NODE, version: process.versions.node, major, recommended: major >= MIN_NODE };
 }
 
-/** Runtime dependencies installed? */
+/** 런타임 의존성 패키지 설치 여부 검사 */
 export function checkDeps() {
   const missing = RUNTIME_PACKAGES.filter((p) => !exists(path.join(ROOT, 'node_modules', ...p.split('/'), 'package.json')));
   return { ok: missing.length === 0, missing, hasNodeModules: exists(path.join(ROOT, 'node_modules')) };
 }
 
-/** public/vendor files present? */
+/** public/vendor 파일 존재 여부 검사 */
 export function checkVendor() {
   const dir = path.join(ROOT, 'public', 'vendor');
   const missing = VENDOR_REQUIRED.filter((f) => !exists(path.join(dir, f)));
@@ -150,7 +151,7 @@ export function checkVendor() {
   return { ok: missing.length === 0, missing, optionalMissing };
 }
 
-/** data/*.json present and parseable? */
+/** data/*.json 파일 존재 및 파싱 가능 여부 검사 */
 export function checkData() {
   const missing = [];
   const broken = [];
@@ -162,7 +163,7 @@ export function checkData() {
   return { ok: !missing.length && !broken.length, missing, broken };
 }
 
-/** Every '/assets/…' or '/fonts/…' URL of the manifest (same walk as test/assets.test.js). */
+/** 매니페스트의 모든 '/assets/…' 또는 '/fonts/…' URL 수집 */
 function manifestUrls(node, out = []) {
   if (typeof node === 'string') { if (/^\/(assets|fonts)\//.test(node)) out.push(node); }
   else if (Array.isArray(node)) for (const x of node) manifestUrls(x, out);
@@ -171,7 +172,7 @@ function manifestUrls(node, out = []) {
 }
 
 /**
- * Downloaded art/audio complete? Compares data/assets.json with public/.
+ * 다운로드된 리소스/오디오 완성도 검사. data/assets.json과 public/ 폴더를 비교합니다.
  * @returns {{ ok: boolean, present: boolean, manifest: boolean, total: number, missing: number, sample: string[], bytes: number }}
  */
 export function checkAssets() {
@@ -183,25 +184,19 @@ export function checkAssets() {
   const missing = [];
   for (const u of urls) {
     let st = null;
-    try { st = fs.statSync(path.join(pub, ...u.split('/').filter(Boolean).map(decodeURIComponent))); } catch { /* missing */ }
+    try { st = fs.statSync(path.join(pub, ...u.split('/').filter(Boolean).map(decodeURIComponent))); } catch { /* 누락됨 */ }
     if (!st || !st.size) missing.push(u);
   }
   return { ok: present && missing.length === 0 && urls.length > 0, present, manifest: true, total: urls.length, missing: missing.length, sample: missing.slice(0, 5), bytes: Number(m.stats?.bytes) || 0 };
 }
 
-/**
- * What the game draws instead when the local-client art is absent (DESIGN §13, docs/DEPLOY.md §6). The battle emotes and
- * the 玩法说明 pages are not in the list: step 5 downloads them from the public mirror with the other assets (GitHub
- * issue #42). Shown by setup and doctor.
- */
-export const LOCAL_ART_FALLBACK = '3D 棋盘改用 2D，部分官方界面图标和灼热/炽焰源石虫模型用替代样式';
-/** Where a machine without the client gets the local art (docs/DEPLOY.md §6「本地客户端素材」); shown by doctor (setup's row,
- * printed on every start by scripts/launch.mjs, only points to that section). */
-export const LOCAL_ART_COPY_HINT = '没有客户端的服务器可以从同一版本的整合包复制 public/assets/local 和 data/local-assets.json';
+/** 로컬 클라이언트 리소스가 없을 때 게임이 대신 렌더링하는 대체 스타일 설명 */
+export const LOCAL_ART_FALLBACK = '3D 보드 대신 2D를 사용하며, 일부 공식 UI 아이콘 및 원석충 모델은 대체 스타일로 표시됩니다';
+/** 클라이언트가 없는 머신에서 로컬 리소스를 가져오는 방법 안내 */
+export const LOCAL_ART_COPY_HINT = '클라이언트가 없는 서버는 동일 버전의 통합팩에서 public/assets/local 및 data/local-assets.json을 복사할 수 있습니다';
 
 /**
- * Local-client art (optional): manifest entry count, whether the 3D board atlas is on disk and whether the extraction
- * has the enemy models only the client has (`spine/enemy/*` groups, extract.py ENEMY_SPINES — added after 0.1.0).
+ * 로컬 클라이언트 리소스 (선택 사항) 상태 검사
  */
 export function checkLocal() {
   const m = readJson(LOCAL_MANIFEST);
@@ -210,23 +205,20 @@ export function checkLocal() {
   return { manifest: !!m, count, board3d: exists(LOCAL_BOARD_ATLAS), tiles: exists(LOCAL_BOARD_TILES), enemySpines, dirPresent: exists(path.join(ROOT, 'public', 'assets', 'local')) };
 }
 
-/**
- * Board tile crops of the extracted atlas (tools/crop-board-atlas.mjs → tiles.json, read by the 2D and 3D board
- * renderers; without it the client requests a missing file and keeps the procedural tiles). Output only on failure.
- */
+/** 추출된 아틀라스에서 보드 타일을 잘라냅니다. */
 function cropBoardTiles(log) {
   const r = capture(process.execPath, [path.join(ROOT, 'tools', 'crop-board-atlas.mjs')], { timeout: 120000 });
-  if (!r.ok) log(c.warn(`  棋盘贴图裁切失败（node tools/crop-board-atlas.mjs）：${r.out.split(/\r?\n/).slice(-3).join(' ')}`));
+  if (!r.ok) log(c.warn(`  보드 텍스처 자르기 실패 (node tools/crop-board-atlas.mjs): ${r.out.split(/\r?\n/).slice(-3).join(' ')}`));
   return r.ok && exists(LOCAL_BOARD_TILES);
 }
 
 // ---------------------------------------------------------------------------------------------------
-// Local Arknights client detection
+// 로컬 명일방주 클라이언트 감지
 // ---------------------------------------------------------------------------------------------------
 
 const AB_TAIL = ['Arknights_Data', 'StreamingAssets', 'AB', 'Windows'];
 
-/** Candidate AssetBundle roots for this OS (existence not checked). */
+/** 현재 OS 기준 AssetBundle 루트 후보 경로 목록 */
 export function clientCandidates() {
   const home = os.homedir();
   const out = [];
@@ -246,7 +238,7 @@ export function clientCandidates() {
   if (IS_MAC) {
     const bottles = path.join(home, 'Library', 'Application Support', 'CrossOver', 'Bottles');
     let names = [];
-    try { names = fs.readdirSync(bottles); } catch { /* no CrossOver */ }
+    try { names = fs.readdirSync(bottles); } catch { /* CrossOver 없음 */ }
     names.sort((a, b) => (b === 'Arknights') - (a === 'Arknights'));
     for (const n of names) {
       for (const pf of ['Program Files', 'Program Files (x86)']) {
@@ -263,14 +255,14 @@ export function clientCandidates() {
   return out;
 }
 
-/** Does the directory look like an AssetBundle root holding the autochess bundles? */
+/** 디렉터리가 오토체스 번들을 포함하는 AssetBundle 루트인지 확인합니다. */
 export function inspectClientRoot(dir) {
   if (!dir || !exists(dir)) return { exists: false, autochess: false };
   const autochess = exists(path.join(dir, 'ui', 'autochess')) || exists(path.join(dir, 'arts', 'maps', 'map_autochess'));
   return { exists: true, autochess };
 }
 
-/** First installed client (explicit dir first). */
+/** 설치된 첫 번째 클라이언트를 찾습니다. */
 export function findClient(explicit) {
   const list = explicit ? [{ path: path.resolve(explicit), kind: '--game' }] : clientCandidates();
   let partial = null;
@@ -283,10 +275,10 @@ export function findClient(explicit) {
 }
 
 // ---------------------------------------------------------------------------------------------------
-// Python (optional)
+// Python (선택 사항)
 // ---------------------------------------------------------------------------------------------------
 
-/** A usable Python ≥ 3.8 launcher: { cmd, args, version } or null. Windows Store stubs are skipped (no version). */
+/** 사용 가능한 Python ≥ 3.8 실행 파일 검색 */
 export function findPython() {
   const cands = IS_WIN ? [['py', ['-3']], ['python', []], ['python3', []]] : [['python3', []], ['python', []]];
   for (const [cmd, pre] of cands) {
@@ -306,19 +298,19 @@ export function venvPython() {
 
 const PY_ENV = { PYTHONUTF8: '1', PYTHONIOENCODING: 'utf-8', PYTHONDONTWRITEBYTECODE: '1', PIP_DISABLE_PIP_VERSION_CHECK: '1' };
 
-/** Create .venv-extract and install tools/local-extract/requirements.txt (skipped when the imports already work). */
+/** .venv-extract 가상환경 생성 및 필요 패키지 설치 */
 function ensureVenv(py, log) {
   const vpy = venvPython();
   if (!exists(vpy)) {
-    log(`  创建 Python 虚拟环境 ${path.relative(ROOT, VENV_DIR)} …`);
+    log(`  Python 가상환경 생성 중: ${path.relative(ROOT, VENV_DIR)} …`);
     const r = run(py.cmd, [...py.args, '-m', 'venv', VENV_DIR], { env: PY_ENV });
-    if (!r.ok || !exists(vpy)) return { ok: false, why: 'python -m venv 失败（Debian/Ubuntu 需要 `sudo apt install python3-venv`）' };
+    if (!r.ok || !exists(vpy)) return { ok: false, why: 'python -m venv 실패 (Debian/Ubuntu 환경에서는 `sudo apt install python3-venv` 필요)' };
   }
   if (capture(vpy, ['-c', 'import UnityPy, lz4, PIL'], { env: PY_ENV }).ok) return { ok: true, python: vpy };
-  log('  安装 UnityPy / lz4 / Pillow（首次约 1–3 分钟）…');
+  log('  UnityPy / lz4 / Pillow 설치 중 (최초 실행 시 약 1–3분 소요) …');
   const r = run(vpy, ['-m', 'pip', 'install', '-r', EXTRACT_REQ], { env: PY_ENV });
   if (!r.ok || !capture(vpy, ['-c', 'import UnityPy, lz4, PIL'], { env: PY_ENV }).ok) {
-    return { ok: false, why: 'pip 安装依赖失败（若 Python 版本过新导致没有预编译包，请安装 Python 3.12 后删除 .venv-extract 重试）' };
+    return { ok: false, why: 'pip 의존성 설치 실패 (최신 Python 버전 사용으로 인한 컴파일 빌드 문제 시, Python 3.12 설치 후 .venv-extract 폴더를 삭제하고 다시 시도하세요)' };
   }
   return { ok: true, python: vpy };
 }
@@ -340,7 +332,7 @@ function parseArgs(argv) {
     else if (a === '-y' || a === '--yes') o.yes = true;
     else if (a === '--quiet' || a === '-q') o.quiet = true;
     else if (a === '-h' || a === '--help') o.help = true;
-    else throw new Error(`未知参数 / unknown option: ${a}（--help 查看用法）`);
+    else throw new Error(`알 수 없는 옵션: ${a} (--help 로 사용법 확인)`);
   }
   return o;
 }
@@ -362,130 +354,130 @@ async function main() {
   const add = (state, label, detail = '') => summary.push({ state, label, detail });
   let fatal = false;
 
-  say(c.bold('\n卫戍协议：盟约 · setup') + c.dim(`  (${ROOT})`));
+  say(c.bold('\n위수 협약: 맹약 · setup') + c.dim(`  (${ROOT})`));
 
   // 1. Node
   const node = checkNode();
   if (!node.ok) {
-    log(`${mark.err} Node.js ${node.version} 太旧：需要 ${MIN_NODE} 或更高（22 / 24 LTS）。`);
-    log(`  下载：${NODE_URL}` + (IS_WIN ? '   或在终端运行：winget install OpenJS.NodeJS.LTS' : IS_MAC ? '   或：brew install node@22' : ''));
+    log(`${mark.err} Node.js ${node.version} 버전이 너무 낮습니다: ${MIN_NODE} 이상이 필요합니다 (22 / 24 LTS 권장).`);
+    log(`  다운로드: ${NODE_URL}` + (IS_WIN ? '   또는 터미널 실행: winget install OpenJS.NodeJS.LTS' : IS_MAC ? '   또는: brew install node@22' : ''));
     return 1;
   }
-  add('ok', 'Node.js', `v${node.version}${node.recommended ? '' : '（可用；推荐 22 / 24 LTS）'}`);
+  add('ok', 'Node.js', `v${node.version}${node.recommended ? '' : ' (사용 가능; 22 / 24 LTS 권장)'}`);
 
   // 2. npm dependencies
   let deps = checkDeps();
   if (!deps.ok && !opts.check) {
-    log(`\n${c.cyan('▶')} 安装依赖（npm ci）…`);
+    log(`\n${c.cyan('▶')} 의존성 패키지 설치 중 (npm ci) …`);
     const npm = npmCommand();
     let r = run(npm.cmd, [...npm.pre, 'ci', '--no-audit', '--no-fund'], { shell: npm.shell });
     if (!r.ok) {
-      log(c.warn('  npm ci 失败，改用 npm install …'));
+      log(c.warn('  npm ci 실패, npm install 로 재시도 중 …'));
       r = run(npm.cmd, [...npm.pre, 'install', '--no-audit', '--no-fund'], { shell: npm.shell });
     }
     deps = checkDeps();
   }
-  if (deps.ok) add('ok', '依赖 node_modules');
-  else { add('err', '依赖 node_modules', `缺少 ${deps.missing.join(', ')} → 运行 npm install`); fatal = true; }
+  if (deps.ok) add('ok', '의존성 node_modules');
+  else { add('err', '의존성 node_modules', `누락됨: ${deps.missing.join(', ')} → npm install 실행 필요`); fatal = true; }
 
   // 3. vendor
   let vendor = checkVendor();
   if (!vendor.ok && deps.ok && !opts.check) {
-    log(`\n${c.cyan('▶')} 复制前端库到 public/vendor …`);
+    log(`\n${c.cyan('▶')} 프론트엔드 라이브러리를 public/vendor 로 복사 중 …`);
     run(process.execPath, [path.join(ROOT, 'tools', 'vendor.mjs')]);
     vendor = checkVendor();
   }
-  if (vendor.ok) add('ok', '前端库 public/vendor', vendor.optionalMissing.length ? '（three.js 缺失：3D 棋盘回退为 2D）' : '');
-  else { add('err', '前端库 public/vendor', `缺少 ${vendor.missing.join(', ')} → 运行 node tools/vendor.mjs`); fatal = true; }
+  if (vendor.ok) add('ok', '프론트엔드 라이브러리 public/vendor', vendor.optionalMissing.length ? ' (three.js 누락: 3D 보드가 2D로 대체됨)' : '');
+  else { add('err', '프론트엔드 라이브러리 public/vendor', `누락됨: ${vendor.missing.join(', ')} → node tools/vendor.mjs 실행 필요`); fatal = true; }
 
   // 4. data
   const data = checkData();
-  if (data.ok) add('ok', '游戏数据 data/*.json');
+  if (data.ok) add('ok', '게임 데이터 data/*.json');
   else {
-    add('err', '游戏数据 data/*.json', [data.missing.length && `缺少 ${data.missing.join(', ')}`, data.broken.length && `无法解析 ${data.broken.join(', ')}`].filter(Boolean).join('；') + ' → git checkout -- data/ 或 node tools/build-data.mjs');
+    add('err', '게임 데이터 data/*.json', [data.missing.length && `누락됨: ${data.missing.join(', ')}`, data.broken.length && `파싱 불가: ${data.broken.join(', ')}`].filter(Boolean).join('; ') + ' → git checkout -- data/ 또는 node tools/build-data.mjs 실행');
     if (data.missing.some((n) => n !== 'assets' && n !== 'emotes') || data.broken.length > 0) fatal = true;
   }
 
   // 5. assets
   let assets = checkAssets();
-  if (!opts.assets) add(assets.ok ? 'ok' : 'skip', '美术/音频 public/assets', assets.ok ? `${assets.total} 个文件` : '已跳过（--no-assets）');
+  if (!opts.assets) add(assets.ok ? 'ok' : 'skip', '리소스/오디오 public/assets', assets.ok ? `${assets.total}개 파일` : '건너뜀 (--no-assets)');
   else if (!assets.ok && deps.ok && !opts.check) {
-    const what = !assets.present ? `首次下载约 ${assets.bytes ? mb(assets.bytes) : '270 MB'}，可随时中断，重新运行会续传`
-      : `补全缺失的 ${assets.missing} 个文件`;
-    log(`\n${c.cyan('▶')} 下载美术与音频素材（${what}）…`);
+    const what = !assets.present ? `최초 다운로드 약 ${assets.bytes ? mb(assets.bytes) : '270 MB'}, 언제든 중단 가능하며 다시 실행 시 이어받습니다`
+      : `누락된 파일 ${assets.missing}개 다운로드 중`;
+    log(`\n${c.cyan('▶')} 리소스 및 오디오 다운로드 중 (${what}) …`);
     const r = run(process.execPath, [path.join(ROOT, 'tools', 'fetch-assets.mjs')]);
     assets = checkAssets();
-    if (!r.ok && !assets.ok) log(c.warn('  素材下载未完成（网络问题？）。游戏仍可运行（使用占位图），稍后重新运行 setup 即可续传。'));
+    if (!r.ok && !assets.ok) log(c.warn('  리소스 다운로드가 완료되지 않았습니다 (네트워크 문제?). 게임은 임시 대체 이미지로 실행 가능하며, 나중에 setup을 다시 실행해 이어받을 수 있습니다.'));
   }
   if (opts.assets) {
-    if (assets.ok) add('ok', '美术/音频 public/assets', `${assets.total} 个文件`);
-    else if (!assets.present) add('warn', '美术/音频 public/assets', '未下载（游戏会用占位图）→ node tools/fetch-assets.mjs');
-    else add('warn', '美术/音频 public/assets', `缺 ${assets.missing}/${assets.total} 个文件 → 重新运行 setup 续传`);
+    if (assets.ok) add('ok', '리소스/오디오 public/assets', `${assets.total}개 파일`);
+    else if (!assets.present) add('warn', '리소스/오디오 public/assets', '다운로드 안 됨 (임시 대체 이미지 사용) → node tools/fetch-assets.mjs');
+    else add('warn', '리소스/오디오 public/assets', `누락 ${assets.missing}/${assets.total}개 파일 → setup 재실행으로 이어받기 가능`);
   }
 
   // 6. local client (optional)
   const local = checkLocal();
   const state = loadState();
-  if (opts.local === 'no') add(local.manifest ? 'ok' : 'skip', '本地客户端美术（可选）', local.manifest ? `已提取 ${local.count} 项` : '已跳过（--no-local）');
+  if (opts.local === 'no') add(local.manifest ? 'ok' : 'skip', '로컬 클라이언트 리소스 (선택)', local.manifest ? `${local.count}개 항목 추출 완료` : '건너뜀 (--no-local)');
   else {
     const client = findClient(opts.game);
     const already = local.manifest && local.dirPresent;
     if (!client) {
       if (already && local.board3d && !local.tiles && !opts.check) cropBoardTiles(log);
-      add(already ? 'ok' : 'skip', '本地客户端美术（可选）', already ? `已提取 ${local.count} 项`
-        : `${opts.game ? `找不到 ${opts.game}` : '未检测到本机明日方舟客户端'}：${LOCAL_ART_FALLBACK}（见 docs/DEPLOY.md 第 6 节）`);
+      add(already ? 'ok' : 'skip', '로컬 클라이언트 리소스 (선택)', already ? `${local.count}개 항목 추출 완료`
+        : `${opts.game ? `${opts.game} 경로를 찾을 수 없음` : '로컬 명일방주 클라이언트 미감지'}: ${LOCAL_ART_FALLBACK} (docs/DEPLOY.md 6장 참조)`);
     } else if (!client.autochess) {
-      add(already ? 'ok' : 'warn', '本地客户端美术（可选）', `${client.kind} 客户端缺少卫戍协议资源（请在游戏内下载全部资源）：${client.path}`);
+      add(already ? 'ok' : 'warn', '로컬 클라이언트 리소스 (선택)', `${client.kind} 클라이언트에 위수 협약 리소스가 없습니다 (게임 내에서 전체 리소스를 다운로드하세요): ${client.path}`);
     } else if (already && opts.local !== 'force') {
       if (local.board3d && !local.tiles && !opts.check) cropBoardTiles(log);
-      add('ok', '本地客户端美术（可选）', `已提取 ${local.count} 项${local.board3d ? '，3D 棋盘可用' : ''}${local.enemySpines ? '' : '，缺少新版的灼热/炽焰源石虫模型'}（重新提取：--local）`);
+      add('ok', '로컬 클라이언트 리소스 (선택)', `${local.count}개 항목 추출 완료${local.board3d ? ', 3D 보드 사용 가능' : ''}${local.enemySpines ? '' : ', 최신 원석충 모델 누락'} (재추출: --local)`);
     } else if (opts.check) {
-      add('skip', '本地客户端美术（可选）', `检测到 ${client.kind} 客户端，可运行 node tools/setup.mjs --local 提取`);
+      add('skip', '로컬 클라이언트 리소스 (선택)', `${client.kind} 클라이언트가 감지됨. node tools/setup.mjs --local 실행으로 추출 가능`);
     } else {
       const py = findPython();
       if (!py) {
-        add('skip', '本地客户端美术（可选）', `检测到 ${client.kind} 客户端，但没有 Python 3.8+（${IS_WIN ? 'winget install Python.Python.3.12' : 'https://www.python.org/downloads/'}）`);
+        add('skip', '로컬 클라이언트 리소스 (선택)', `${client.kind} 클라이언트가 감지되었으나 Python 3.8+ 이상이 없습니다 (${IS_WIN ? 'winget install Python.Python.3.12' : 'https://www.python.org/downloads/'})`);
       } else {
         let go = opts.local === 'force' || opts.yes;
         if (go || !state.localDeclined) {
-          log(`\n${c.cyan('▶')} 检测到本机明日方舟客户端（${client.kind}）：\n  ${c.dim(client.path)}`);
-          log('  可以从中提取官方 3D 棋盘贴图、界面图标等（仅本机使用；通常 1–5 分钟，Python 依赖约 40 MB，装在项目内的 .venv-extract）。');
+          log(`\n${c.cyan('▶')} 로컬 명일방주 클라이언트 감지됨 (${client.kind}):\n  ${c.dim(client.path)}`);
+          log('  공식 3D 보드 텍스처, UI 아이콘 등을 추출할 수 있습니다 (로컬 전용; 약 1–5분 소요, Python 의존성 약 40 MB는 프로젝트 내 .venv-extract에 설치됨).');
         }
         let unattended = false;
         if (!go && !state.localDeclined) {
-          const answer = await ask('现在提取吗？', true);
-          if (answer === null) unattended = true; // no terminal (service, pipe): don't install Python packages unasked
-          else if (!answer) { saveState({ localDeclined: true }); log(c.dim('  已记住选择，之后不再询问；需要时运行 node tools/setup.mjs --local')); }
+          const answer = await ask('지금 추출하시겠습니까?', true);
+          if (answer === null) unattended = true; // 터미널 없음: 동의 없이 Python 패키지를 설치하지 않음
+          else if (!answer) { saveState({ localDeclined: true }); log(c.dim('  선택을 기억했습니다. 이후 다시 묻지 않습니다. 필요 시 node tools/setup.mjs --local 실행')); }
           go = answer === true;
         }
-        if (!go) add('skip', '本地客户端美术（可选）', unattended ? '无终端，未询问、未提取（需要时运行 node tools/setup.mjs --local）' : '已跳过（需要时运行 node tools/setup.mjs --local）');
+        if (!go) add('skip', '로컬 클라이언트 리소스 (선택)', unattended ? '터미널이 없어 질의를 건너뛰었습니다 (필요 시 node tools/setup.mjs --local 실행)' : '건너뜀 (필요 시 node tools/setup.mjs --local 실행)');
         else {
           const venv = ensureVenv(py, log);
-          if (!venv.ok) add('warn', '本地客户端美术（可选）', venv.why);
+          if (!venv.ok) add('warn', '로컬 클라이언트 리소스 (선택)', venv.why);
           else {
-            log(`  ${c.cyan('▶')} 提取中（python tools/local-extract/extract.py --game …）`);
+            log(`  ${c.cyan('▶')} 추출 중 (python tools/local-extract/extract.py --game …)`);
             const r = run(venv.python, [EXTRACT_PY, '--game', client.path], { env: PY_ENV });
             if (r.ok) cropBoardTiles(log);
             const after = checkLocal();
-            if (r.ok && after.manifest) { add('ok', '本地客户端美术（可选）', `提取 ${after.count} 项${after.board3d ? '，3D 棋盘可用' : ''}`); saveState({ localDeclined: false, localExtractedFrom: client.path }); }
-            else add('warn', '本地客户端美术（可选）', `提取未成功（退出码 ${r.code}）：游戏照常运行，${LOCAL_ART_FALLBACK}；可稍后重试 node tools/setup.mjs --local`);
+            if (r.ok && after.manifest) { add('ok', '로컬 클라이언트 리소스 (선택)', `${after.count}개 항목 추출 완료${after.board3d ? ', 3D 보드 사용 가능' : ''}`); saveState({ localDeclined: false, localExtractedFrom: client.path }); }
+            else add('warn', '로컬 클라이언트 리소스 (선택)', `추출 실패 (종료 코드 ${r.code}): 게임은 정상 실행되며 ${LOCAL_ART_FALLBACK}. 나중에 node tools/setup.mjs --local 로 재시도 가능`);
           }
         }
       }
     }
   }
 
-  // summary
-  log(c.bold('\n── 准备情况 ──────────────────────────────'));
+  // 요약 출력
+  log(c.bold('\n── 준비 상태 ──────────────────────────────'));
   const width = Math.max(...summary.map((s) => displayWidth(s.label))) + 2;
   for (const s of summary) log(`${mark[s.state]} ${padDisplay(s.label, width)}${s.detail ? c.dim(s.detail) : ''}`);
   if (fatal) {
-    log(c.err('\n还不能启动：请先解决上面标 ✘ 的问题（node tools/doctor.mjs 可做更详细的诊断）。'));
+    log(c.err('\n아직 실행할 수 없습니다: 위의 ✘ 표시된 문제를 먼저 해결하세요 (node tools/doctor.mjs 로 상세 진단 가능).'));
     return 1;
   }
   if (!opts.quiet) {
-    log(`\n${c.ok('可以开始了：')} npm start   ${c.dim('（Windows 可直接双击 scripts\\start-windows.bat）')}`);
-    log(c.dim('浏览器打开 http://localhost:3000 ；同一局域网的朋友用终端里打印的 LAN 地址。'));
+    log(`\n${c.ok('시작할 준비가 되었습니다:')} npm start   ${c.dim('(Windows 환경은 scripts\\start-windows.bat 더블 클릭 가능)')}`);
+    log(c.dim('브라우저에서 http://localhost:3000 접속; 동일 LAN 환경의 친구는 터미널에 표시된 LAN 주소로 접속.'));
   }
   return 0;
 }
@@ -496,7 +488,7 @@ function isMain() {
 
 if (isMain()) {
   main().then((code) => { process.exitCode = code; }, (e) => {
-    console.error(`${mark.err} setup 出错：${e?.stack || e}`);
+    console.error(`${mark.err} setup 중 오류 발생: ${e?.stack || e}`);
     process.exitCode = 1;
   });
 }
