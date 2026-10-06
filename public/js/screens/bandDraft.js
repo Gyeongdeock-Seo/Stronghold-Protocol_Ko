@@ -39,7 +39,7 @@ export function BandOffTag({ names = [] }) {
 /** The detail pane's note for such a strategy: "本局禁用【拉特兰】盟约，此策略效果可能无法发挥" (the bond names struck through). */
 export function BandOffNote({ names = [] }) {
   if (!names.length) return null;
-  return html`<p class="draft-detail__off" role="note" aria-label=${bandOffLine(names)}><${Icon} name="info" /><span>本局禁用${names.map((n, i) => html`<span key=${i}>【<s class="draft-detail__offname">${n}</s>】</span>`)}盟约，此策略效果可能无法发挥</span></p>`;
+  return html`<p class="draft-detail__off" role="note" aria-label=${bandOffLine(names)}><${Icon} name="info" /><span data-i18n-ctx="bandoff">本局禁用${names.map((n, i) => html`<span key=${i}>【<s class="draft-detail__offname">${n}</s>】</span>`)}盟约，此策略效果可能无法发挥</span></p>`;
 }
 
 /**

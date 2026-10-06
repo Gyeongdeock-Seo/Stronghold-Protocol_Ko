@@ -520,7 +520,7 @@ function LoadoutScreen({ st }) {
             <${Button} variant="primary" icon="check" data-testid="loadout-io-apply" disabled=${!ioText.trim() || !ready} onClick=${ioApply}>导入<//>`}>
       <p class="lo-io__hint">${io.mode === 'export'
         ? html`共 <b class="num">${nChanged}</b> 名干员已调整。复制或下载这份数据，即可在别的设备或浏览器上导入。`
-        : html`把导出的内容粘贴到下方，或点「选择文件」。${nChanged ? html`导入会<strong>覆盖</strong>当前的 ${nChanged} 名干员调配。` : null}`}</p>
+        : html`把导出的内容粘贴到下方，或点「选择文件」。${nChanged ? html`导入会<strong>覆盖</strong>${`当前的 ${nChanged} 名干员调配。`}` : null}`}</p>
       <textarea class="lo-io__text" data-testid="loadout-io-text" spellcheck=${false} readOnly=${io.mode === 'export'} value=${ioText}
         placeholder=${io.mode === 'export' ? '' : '在此粘贴导出的调配内容…'}
         onInput=${(e) => setIo({ mode: io.mode, text: e.currentTarget.value })}></textarea>

@@ -167,7 +167,7 @@ export function TempRowNotice({ view, count, items = 0, label = true, ready = fa
   return html`<div class="tempnote" aria-hidden="false" data-testid="temp-notice">
     <svg class="tempnote__frame" aria-hidden="true"><polygon points=${pts} /></svg>
     ${label ? html`<div class=${`tempnote__label is-${f.side}`} style=${style} role="status">
-      <b class="tempnote__title"><${Icon} name="warn" />临时整备区 <span class="num">${count}</span> ${what}待处理</b>
+      <b class="tempnote__title" data-i18n-ctx="tempwarn"><${Icon} name="warn" />临时整备区 <span class="num">${count}</span> ${what}待处理</b>
       <span class="tempnote__rule">${tempRowRule(ready)}</span>
     </div>` : null}
   </div>`;

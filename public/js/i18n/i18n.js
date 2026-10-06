@@ -12,6 +12,8 @@
 //   manual.json    공식 KR 테이블에 없는 데이터 문자열 수동 번역
 //   ui.json        코드에 박힌 UI 문자열 수동 번역 (tools/i18n/extract-ui-strings.mjs로 목록 추출)
 //   patterns.json  "{0}" 자리표시자가 있는 문장 패턴: { "还剩 {0} 场作战": "작전 {0}회 남음" }
+// A key "<ctx>|<text>" translates <text> only inside an element carrying data-i18n-ctx="<ctx>" (one Chinese word with
+// two Korean meanings: "toggle|关闭" is 꺼짐 on a switch, plain "关闭" is 닫기 on a close button).
 //
 // 언어 설정: localStorage `sp.pref.lang` = 'ko' | 'zh' (기본 'ko'). setLang()은 저장 후 새로고침한다.
 // Node(단위 테스트)에서는 아무것도 하지 않는다: tr()은 입력을 그대로 돌려준다.
@@ -156,11 +158,22 @@ function translate(s, noPieces = false) {
  * 화면 표시용 번역. 한국어 모드가 아니거나 사전에 없으면 원문 그대로.
  * @template T
  * @param {T} s
+ * @param {string | null} [ctx] a data-i18n-ctx context: a "<ctx>|<text>" entry wins over the plain one
  * @returns {T}
  */
-export function tr(s) {
+export function tr(s, ctx = null) {
   if (!active || typeof s !== 'string' || !s) return s;
-  return /** @type {any} */ (translate(s));
+  return /** @type {any} */ (translateIn(s, ctx));
+}
+
+/** translate(), preferring the "<ctx>|<text>" entry of the context (surrounding whitespace kept). */
+function translateIn(s, ctx) {
+  if (ctx) {
+    const core = s.trim();
+    const hit = dict.get(`${ctx}|${core}`);
+    if (hit !== undefined) return s.replace(core, () => hit);
+  }
+  return translate(s);
 }
 
 // ---- DOM 번역기 -------------------------------------------------------------------------------
@@ -174,10 +187,19 @@ function skipNode(el) {
   return false;
 }
 
+/** The data-i18n-ctx of the nearest ancestor that has one. */
+function ctxOf(el) {
+  for (let e = el; e && e.nodeType === 1; e = e.parentNode) {
+    const c = e.getAttribute && e.getAttribute('data-i18n-ctx');
+    if (c) return c;
+  }
+  return null;
+}
+
 function fixText(node) {
   const v = node.data;
   if (!v || !TRIGGER.test(v) || skipNode(node.parentNode)) return;
-  const t = translate(v);
+  const t = translateIn(v, ctxOf(node.parentNode));
   if (t !== v) node.data = t;
 }
 
