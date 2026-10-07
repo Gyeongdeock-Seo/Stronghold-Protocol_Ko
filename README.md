@@ -18,9 +18,9 @@
 
 | 동맹 방 | 전략 선택 | 정비 기간（상점 / 맹약） |
 |---|---|---|
-| ![房间](docs/img/room.jpg) | ![策略](docs/img/band-draft.jpg) | ![休整期](docs/img/prep.jpg) |
+| ![방](docs/img/room.jpg) | ![전략](docs/img/band-draft.jpg) | ![정비 기간](docs/img/prep.jpg) |
 | **배치 방향 휠** | **전투** | **최종 공세** |
-| ![方向](docs/img/facing-wheel.jpg) | ![作战](docs/img/combat.jpg) | ![最终攻势](docs/img/final-assault.jpg) |
+| ![방향](docs/img/facing-wheel.jpg) | ![작전](docs/img/combat.jpg) | ![최종 공세](docs/img/final-assault.jpg) |
 
 ## 목차
 
@@ -33,11 +33,9 @@
 
 「위수협의: 맹약」은 오토체스 + 타워 디펜스 게임입니다. 정비 기간에는 지휘 센터에서 오퍼레이터를 모집하고, 진형을 구성하며, 장비를 배치합니다. 전투 기간에는 오퍼레이터가 자동으로 배치되어 빨간 문에서 몰려오는 적을 상대하며, 놓친 적은 목표의 생명력을 감소시킵니다. 본 프로젝트는 이 게임플레이를 브라우저에서 재현했으며, 규칙과 수치는 가능한 한 공식 데이터 테이블 및 PRTS를 대조하여 구현했습니다.
 
-「위수협의: 맹약」은 오토체스 + 타워 디펜스 게임입니다. 정비 기간에는 지휘 센터에서 오퍼레이터를 모집하고, 진형을 구성하며, 장비를 배치합니다. 전투 기간에는 오퍼레이터가 자동으로 배치되어 빨간 문에서 몰려오는 적을 상대하며, 놓친 적은 목표의 생명력을 감소시킵니다. 본 프로젝트는 이 게임플레이를 브라우저에서 재현했으며, 규칙과 수치는 가능한 한 공식 데이터 테이블 및 PRTS를 대조하여 구현했습니다.
-
 - **싱글 시뮬레이션**(1인)과 **동맹 시뮬레이션**(1–4인 **협동**, PvP 없음, 빈 자리는 AI 팀원을 추가할 수 있음).
 - 서버는 Node.js 프로그램이며, **전투는 각 플레이어의 브라우저에서 시뮬레이션**됩니다(공식과 동일). 서버는 경제와 라운드만 관리하므로 저전력 소형 PC 한 대로도 서버를 열 수 있습니다.
-- 현재 버전은 0.1.3입니다. 0.1.1 릴리스 이후 GitHub에 보고된 문제를 수정했으며, 자세한 내용은 [CHANGELOG.md](CHANGELOG.md)를 참조하십시오. 아직 일부 규칙은 추론을 바탕으로 구현되어 있으며, 공식과 일치하지 않는 부분은 Issue로 알려주시면 감사하겠습니다.
+- 현재 버전은 0.1.4입니다. 0.1.3 릴리스 이후 플레이어 및 GitHub에 보고된 문제를 수정하고 여러 기여자의 PR을 병합했습니다(자세한 내용은 [CHANGELOG.md](CHANGELOG.md) 참조). 아직 일부 규칙은 추론을 바탕으로 구현되어 있으며, 공식과 일치하지 않는 부분은 Issue로 알려주시면 감사하겠습니다.
 
 ## 기능 개요
 
@@ -64,73 +62,27 @@
 
 통합 패키지에는 코드, 실행에 필요한 의존성 및 모든 미술 / 오디오 소재(공식 3D 체스판 텍스처 포함)가 이미 들어 있으므로 압축을 풀기만 하면 바로 플레이할 수 있으며, 별도로 다운로드할 필요가 없습니다.
 
-통합 패키지에는 코드, 실행에 필요한 의존성 및 모든 미술 / 오디오 소재(공식 3D 체스판 텍스처 포함)가 이미 들어 있으므로 압축을 풀기만 하면 바로 플레이할 수 있으며, 별도로 다운로드할 필요가 없습니다.
-
 1. **Node.js 22 또는 24 (LTS) 설치**
    - Windows: PowerShell에서 `winget install OpenJS.NodeJS.LTS`를 실행하거나 <https://nodejs.org/zh-cn/download>에서 설치 프로그램을 다운로드합니다.
    - macOS: `brew install node@22`를 실행하거나 공식 웹사이트에서 설치 프로그램을 다운로드합니다.
    - Linux: 배포판의 패키지 관리자, nvm 또는 fnm을 사용합니다.
-2. **다운로드**: [Releases](../../releases/latest) 페이지에서 최신 버전(v0.1.3)의 통합 패키지(zip)를 다운로드하고, 경로가 짧은 폴더에 압축을 풉니다(Windows에서는 OneDrive 동기화 폴더에 넣지 않는 것을 권장합니다).
+2. **다운로드**: [Releases](../../releases/latest) 페이지에서 최신 버전(v0.1.4)의 통합 패키지(zip)를 다운로드하고, 경로가 짧은 폴더에 압축을 풉니다(Windows에서는 OneDrive 동기화 폴더에 넣지 않는 것을 권장합니다).
 3. **실행**
-   - Windows: **`scripts\\start-windows.bat`**를 더블 클릭합니다. 「보안 경고」가 표시되면 「실행」을 클릭합니다. Windows 방화벽 팝업에서는 「개인 네트워크」를 선택하고 허용합니다.
+   - Windows: **`scripts\start-windows.bat`**를 더블 클릭합니다. 「보안 경고」가 표시되면 「실행」을 클릭합니다. Windows 방화벽 팝업에서는 「개인 네트워크」를 선택하고 허용합니다.
    - macOS / Linux: 압축을 푼 폴더에서 `./scripts/start.sh`(또는 `bash scripts/start.sh`)를 실행합니다.
 4. 브라우저가 자동으로 `http://localhost:3000`을 엽니다. 창에 표시된 LAN 주소를 같은 네트워크의 친구에게 바로 공유할 수 있습니다. 창을 닫거나 `Ctrl+C`를 누르면 서버가 중지됩니다.
-## 简介
-
-「卫戍协议：盟约」是自走棋 + 塔防：休整期在调度中心招募干员、摆阵、配装备，作战期干员自动部署，迎击从红门涌来的敌人，漏过去的敌人扣目标生命值。本项目在浏览器里复刻了这一玩法，规则和数值尽量对照官方数据表与 PRTS 核对。
-
-- **独立模拟**（单人）与**同盟模拟**（1–4 人**合作**，没有 PvP；空位可以加 AI 队友）。
-- 服务器是一个 Node.js 程序，**战斗在各玩家的浏览器里模拟**（和官方一样），服务器只管经济与回合，一台低功耗小主机就能开服。
-- 当前版本 0.1.4：修复了 0.1.3 发布后玩家和 GitHub 上反馈的问题，并合并了多位贡献者的 PR，详见 [CHANGELOG.md](CHANGELOG.md)。仍有少数规则按推断实现，与官方不一致的地方欢迎在 Issue 里反馈。
-
-## 功能一览
-
-- **完整的一局**：确认本局信息 → 策略轮选（40 名策略）→ 14 回合 → 结算称号；险境及以上满足条件时进入第 15 回合「隐秘核心」。
-- **4 种难度**：标准 / 险境 / 绝境 / 终极，独立与同盟各一套参数，均取自官方数据。
-- **休整期**：招募、刷新、冻结、升级调度中心；整备区与临时整备区；从整备区拖到棋盘部署，用**方向轮盘**选择朝向。同盟模拟的卡池共用。
-- **晋升精锐**：3 名同名干员自动合成精锐，并获得一次高一阶的免费招募。
-- **干员与调配**：112 名可招募干员（+ 精锐）及其技能、天赋和特质；开局前可以为每名干员选择携带的技能（283 个技能全部手工实现）和精锐的模组。
-- **盟约与层数**：23 个盟约（8 个势力核心盟约 + 附加盟约），层数整局保留，每个盟约最多 999 层。
-- **装备与机变**：装备与法术，同名装备合成、特定组合赋予盟约效果；已配发的装备锁定在干员身上。部分回合开始前有机变选卡（装备、资金、干员、层数、悬赏等）。
-- **自动作战**：技能按官方「技能策略」自动释放；按接触半径阻挡，阻挡者倒下时由接触的干员接替；元素损伤与元素爆发；召唤物由玩家手动摆放；推开 / 拉拽按力度与重量计算；被击倒的干员留在原地显示再部署倒计时。
-- **地形与敌人**：阻隔工事、射击台、源石流吹风机、沼泽、排气格栅、涨潮等地形装置；空中与近地悬浮敌人、悬赏敌人。
-- **联防**：有人漏怪、又有人完美作战时，完美作战的队友带着阵容帮忙拦截漏掉的敌人。
-- **最终攻势与隐秘核心**：两人共享一个战场，全队共同削减同一条领袖血条；10 个敌方领袖，巨型领袖约 5×3 格的受击范围，以及官方的限伤规则。
-- **结算称号**：卫戍之星、不朽盟约、坚若磐石等 6 个称号。
-- **断线重连**：同盟模拟断线后 10 分钟内重新打开页面即可回到原座位，掉线期间按原阵容自动作战，也可以「暂离」交给 AI 托管；独立模拟 24 小时内可以回来继续（同一个浏览器）。
-- **交互细节**：漏怪时顶栏的目标生命值实时减少（结算时确定）；点选、拖放和配发装备都按地上的方格；购买、升级和机变选卡都需要点两次确认；只有一名玩家时除作战外不计时。
-- **画面与声音**：真实 Spine 小人、官方 BGM 与音效、表情（6 套 × 6 个）、作战特效；可选的官方 3D 棋盘（需要从本机客户端提取贴图）。
-- **手机与电脑**：触摸拖拽、长按查看详情，推荐横屏；设置里可以调低画质。
-
-## 快速开始
-
-### 方式一：整合包（推荐）
-
-整合包里已经包含代码、运行依赖和全部美术 / 音频（含官方 3D 棋盘贴图），解压就能玩，不需要再下载任何东西。
-
-1. **安装 Node.js 22 或 24（LTS）**
-   - Windows：在 PowerShell 里运行 `winget install OpenJS.NodeJS.LTS`，或到 <https://nodejs.org/zh-cn/download> 下载安装包。
-   - macOS：`brew install node@22`，或到官网下载安装包。
-   - Linux：发行版的包管理器、nvm 或 fnm。
-2. **下载**：在 [Releases](../../releases/latest) 页面下载最新版本（v0.1.4）的整合包（zip），解压到一个路径较短的文件夹（Windows 上建议不要放在 OneDrive 同步的目录里）。
-3. **启动**
-   - Windows：双击 **`scripts\start-windows.bat`**。如果弹出「安全警告」，点「运行」；Windows 防火墙弹窗请勾选「专用网络」并允许。
-   - macOS / Linux：在解压出的文件夹里运行 `./scripts/start.sh`（或 `bash scripts/start.sh`）。
-4. 浏览器会自动打开 `http://localhost:3000`。窗口里列出的局域网地址可以直接发给同一网络的朋友。关闭窗口（或按 `Ctrl+C`）即停止服务器。
 
 ### 방법 2: 소스 코드에서 실행
 
 ```bash
 git clone https://github.com/sganggs/Stronghold-Protocol.git
 cd Stronghold-Protocol
-npm install        # 安装依赖（postinstall 会把 pixi / preact / three 复制到 public/vendor）
-npm run setup      # 检查环境，并从公开镜像下载约 270 MB 美术 / 音频（可中断，再次运行会续传）
-npm start          # 启动服务器：http://localhost:3000
+npm install        # 의존성 설치 (postinstall 과정에서 pixi / preact / three 라이브러리를 public/vendor로 복사함)
+npm run setup      # 환경 점검 및 공개 미러에서 약 270MB의 미술/오디오 다운로드 (중단 시 재실행하면 이어받기 가능)
+npm start          # 서버 실행: http://localhost:3000
 ```
 
 시작 스크립트(Windows `scripts\start-windows.bat`, macOS / Linux `scripts/start.sh`)를 직접 실행할 수도 있습니다. 처음 실행할 때 자동으로 의존성을 설치하고 소재를 다운로드한 뒤 서버를 시작하고 브라우저를 엽니다.
-
-시작 스크립트(Windows `scripts\\start-windows.bat`, macOS / Linux `scripts/start.sh`)를 직접 실행할 수도 있습니다. 처음 실행할 때 자동으로 의존성을 설치하고 소재를 다운로드한 뒤 서버를 시작하고 브라우저를 엽니다.
 
 - **로컬 클라이언트 소재(선택 사항)**: 공식 3D 체스판, 일부 공식 인터페이스 아이콘(대화 버튼 및 표정 패널 테두리, 모듈형 아이콘 등)과 화열 / 초열 원석충의 공식 모델은 로컬의 《명일방주》 PC 클라이언트에서 추출해야 합니다(Windows 네이티브 클라이언트, macOS의 CrossOver 또는 PlayCover). `npm run setup`이 클라이언트를 감지하면 추출 여부를 묻습니다(Python 3.8+ 필요, 의존성은 프로젝트 내부의 `.venv-extract`에 설치되어 시스템에는 영향을 주지 않음). 이후 `node tools/setup.mjs --local`로 다시 추출하거나 `--game "<…/StreamingAssets/AB/Windows>"`로 경로를 지정할 수 있습니다. 클라이언트가 없으면 자동으로 2D 체스판을 사용하며, 다른 기능에는 영향을 주지 않습니다. 대신 사용할 스타일: 2D 체스판, 비슷한 아이콘, 염색된 일반 원석충. 표정과 「플레이 방법」 튜토리얼 이미지는 공개 미러에서 함께 다운로드되므로 클라이언트가 없어도 됩니다. 클라이언트가 없는 서버(예: Linux VPS)도 **같은 버전**의 통합 패키지에서 `public/assets/local/` 및 `data/local-assets.json`을 복사해 사용할 수 있습니다. 자세한 내용은 [docs/DEPLOY.md](docs/DEPLOY.md)의 「로컬 클라이언트 소재」를 참조하십시오.
 - 소재 다운로드는 GitHub를 우선 사용하며, 실패하면 자동으로 jsDelivr 미러로 전환합니다.
@@ -175,12 +127,12 @@ npm start          # 启动服务器：http://localhost:3000
 
 친구가 같은 LAN에 있지 않은 경우 아래와 같은 일반적인 방법을 사용할 수 있습니다. 자신의 상황에 맞는 방법을 하나 선택하면 됩니다. 여기서는 간단한 소개만 제공하며, 언급된 도구와 서비스는 예시일 뿐 본 프로젝트와 아무런 관계가 없고 추천하는 것도 아닙니다. 구체적인 설치, 비용 및 사용 규칙은 각 서비스의 공식 안내를 따르십시오. 배포 세부 사항(방화벽, 부팅 시 자동 실행, 리버스 프록시 및 HTTPS, Docker)은 **[docs/DEPLOY.md](docs/DEPLOY.md)**를 참조하십시오.
 
-| 방법 | 방법 | 적합한 경우 |
-|---|---|---|
-| **같은 LAN 직접 연결** | 시작 창의 LAN 주소를 친구에게 공유 | 같은 집, 기숙사 또는 PC방 |
-| **네트워크 구성 도구(가상 LAN)** | 예: Tailscale, ZeroTier, EasyTier, 蒲公英. 서버를 여는 사람과 친구가 같은 도구를 설치하고 같은 네트워크에 가입한 뒤, 친구가 서버 컴퓨터의 가상 IP로 `http://<가상 IP>:3000`에 접속 | 정해진 몇 명의 지인과 플레이할 때; 인터넷에 직접 노출하지 않음. 친구도 클라이언트를 설치해야 하며 일부 도구는 계정 등록이 필요합니다. 지역이 멀 경우 릴레이를 거쳐 느려질 수 있음 |
-| **NAT 통과 / 터널** | 서버를 여는 사람만 클라이언트를 실행하고 친구는 URL을 바로 엽니다. 예: 직접 구축한 frp(공인 IP 서버 필요), Cloudflare의 `cloudflared tunnel --url http://localhost:3000`(임시 주소이며 실행할 때마다 변경됨; 중국 내 접속 시 지연이 높을 수 있음), 중국의 Sakura frp와 같은 공개 터널 서비스(일반적으로 실명 인증이 필요하며 중국 본토 노드에서 웹페이지를 제공할 경우 ICP 등록 요구 사항이 있을 수 있음) | 라우터를 변경하고 싶지 않거나 공인 IP가 없는 경우. 무료 회선은 대역폭이 제한적이며 처음 소재를 로드할 때 느릴 수 있음 |
-| **클라우드 서버 / VPS 직접 배포** | VPS에서 통합 패키지를 실행하거나 저장소에 포함된 `Dockerfile`을 사용합니다. Caddy / Nginx로 HTTPS를 추가합니다. 플레이어와 가깝고 회선이 좋은 지역을 선택하십시오(중국 본토 플레이어를 대상으로 할 경우 해외 데이터센터의 귀환 경로에 주의해야 하며, 그렇지 않으면 저녁 피크 시간대에 지연이 매우 높아질 수 있음; 중국 본토 서버에 도메인을 연결하려면 ICP 등록이 필요함) | 장기간 서버를 운영하고 플레이어가 서로 다른 지역에 분포한 경우 |
+| 방법 | 적합한 경우 |
+|---|---|
+| **같은 LAN 직접 연결** | 시작 창의 LAN 주소를 친구에게 공유. 같은 집, 기숙사 또는 PC방에 있는 경우 적합합니다. |
+| **네트워크 구성 도구(가상 LAN)** | 예: Tailscale, ZeroTier, EasyTier, 蒲公英. 서버를 여는 사람과 친구가 같은 도구를 설치하고 같은 네트워크에 가입한 뒤, 친구가 서버 컴퓨터의 가상 IP로 `http://<가상 IP>:3000`에 접속합니다. 정해진 몇 명의 지인과 플레이할 때 좋으며 인터넷에 직접 노출되지 않습니다. 친구도 클라이언트를 설치해야 하며 일부 도구는 계정 등록이 필요합니다. 지역이 멀 경우 릴레이를 거쳐 느려질 수 있습니다. |
+| **NAT 통과 / 터널** | 서버를 여는 사람만 클라이언트를 실행하고 친구는 URL을 바로 엽니다. 예: 직접 구축한 frp(공인 IP 서버 필요), Cloudflare의 `cloudflared tunnel --url http://localhost:3000`(임시 주소이며 실행할 때마다 변경됨; 지연이 발생할 수 있음), 기타 공개 터널 서비스. 라우터를 변경하고 싶지 않거나 공인 IP가 없는 경우에 적합합니다. 무료 회선은 대역폭이 제한적이며 처음 소재를 로드할 때 느릴 수 있습니다. |
+| **클라우드 서버 / VPS 직접 배포** | VPS에서 통합 패키지를 실행하거나 저장소에 포함된 `Dockerfile`을 사용합니다. Caddy / Nginx로 HTTPS를 추가합니다. 플레이어와 가깝고 회선이 좋은 지역을 선택하십시오. 장기간 서버를 운영하고 플레이어가 서로 다른 지역에 분포한 경우 적합합니다. |
 
 일반적인 주의 사항:
 
@@ -210,8 +162,6 @@ npm start          # 启动服务器：http://localhost:3000
 
 | 문서 | 내용 |
 |---|---|
-| 문서 | 내용 |
-|---|---|
 | [CHANGELOG.md](CHANGELOG.md) | 변경 기록: 각 버전에서 수정된 사항과 확인 결과 문제가 아니었던 피드백 |
 | [docs/PLAYING.md](docs/PLAYING.md) | 게임플레이 가이드: 진행 과정, 경제, 모집 및 승급, 진형 구성, 공동 방어, 맹약, 최종 공세, 정산 칭호 |
 | [docs/DEPLOY.md](docs/DEPLOY.md) | 배포 가이드: Windows 서버 실행 및 부팅 시 자동 실행, 방화벽, 네트워크 구성 / 터널, 리버스 프록시 및 HTTPS, Docker, systemd, 문제 해결 |
@@ -227,19 +177,17 @@ npm start          # 启动服务器：http://localhost:3000
 ## 개발 및 테스트
 
 ```bash
-npm run dev                 # node --watch：改动服务器代码后自动重启
-node --test                 # 单元 + 集成测试（约 3170 项；缺少素材 / 浏览器的用例会自动跳过）
-SP_E2E=1 node --test test/ui/mock.e2e.test.js        # 浏览器端到端测试，需要本机 Chrome（CHROME_PATH 可指定路径）
-SP_REAL_E2E=1 node --test test/ui/real.e2e.test.js   # 需要 Chrome + 已下载的素材
-RENDER_E2E=1 node --test 'test/render/*.browser.test.js'   # 渲染测试，部分需要本地提取的棋盘贴图
-GOLDEN_FULL=1 node --test test/golden.test.js           # 黄金结果：固定种子的整套战斗与人机对局摘要（默认只跑快速子集）
+npm run dev                 # node --watch: 서버 코드 변경 시 자동 재시작
+node --test                 # 단단위 + 통합 테스트 (약 3170개 항목; 소재/브라우저가 부족한 테스트케이스는 자동 스킵)
+SP_E2E=1 node --test test/ui/mock.e2e.test.js        # 브라우저 E2E 테스트, 로컬 Chrome 필요 (CHROME_PATH로 경로 지정 가능)
+SP_REAL_E2E=1 node --test test/ui/real.e2e.test.js   # Chrome + 다운로드된 소재 필요
+RENDER_E2E=1 node --test 'test/render/*.browser.test.js'   # 렌더링 테스트, 일부는 로컬 추출 체스판 텍스처 필요
+GOLDEN_FULL=1 node --test test/golden.test.js           # 골든 결과: 고정 시드의 전체 전투 및 AI 대국 요약 (기본은 빠른 서브셋만 실행)
 ```
 
 - 게임 데이터는 `npm run build-data`(`tools/build-data.mjs`)를 통해 공식 데이터 테이블에서 생성됩니다. `data/*.json`을 수동으로 수정하지 마십시오.
+- 리팩터링만 수행하고 게임플레이를 변경하지 않는 커밋은 `test/golden/*.json`을 변경해서는 안 됩니다. 의도적으로 게임플레이를 변경할 때는 `npm run golden:update`를 실행하고 차이점을 확인한 후 변경 사항과 함께 커밋하십시오([test/golden/README.md](test/golden/README.md) 참조).
 - GitHub Actions([.github/workflows/ci.yml](.github/workflows/ci.yml))는 Ubuntu 및 Windows, Node 22 / 24에서 `npm ci`, `node --test` 및 서버 스모크 테스트를 실행합니다.
-- 游戏数据由 `npm run build-data`（`tools/build-data.mjs`）从官方数据表生成，不要手工修改 `data/*.json`。
-- 只重构、不改玩法的提交不能改变 `test/golden/*.json`；有意改变玩法时运行 `npm run golden:update`，检查差异后随改动一起提交（见 [test/golden/README.md](test/golden/README.md)）。
-- GitHub Actions（[.github/workflows/ci.yml](.github/workflows/ci.yml)）在 Ubuntu 与 Windows、Node 22 / 24 上运行 `npm ci`、`node --test` 和服务器冒烟测试。
 
 ## 프로젝트 구조
 
@@ -266,7 +214,7 @@ GOLDEN_FULL=1 node --test test/golden.test.js           # 黄金结果：固定�
 - 소재 출처: [yuanyan3060/ArknightsGameResource](https://github.com/yuanyan3060/ArknightsGameResource), [fexli/ArknightsResource](https://github.com/fexli/ArknightsResource), [isHarryh/Ark-Models](https://github.com/isHarryh/Ark-Models), [ArknightsAssets/ArknightsAssets2](https://github.com/ArknightsAssets/ArknightsAssets2). 글꼴은 [TimWangZi/The-font-of-Arknights](https://github.com/TimWangZi/The-font-of-Arknights) 및 Google Fonts(Noto Sans SC)에서 가져왔습니다. 자세한 내용은 [docs/ASSETS.md](docs/ASSETS.md)를 참조하십시오.
 - 규칙 확인 참고 자료: [PRTS 명일방주 중국어 Wiki](https://prts.wiki/).
 - LZ4AK 압축 해제: `tools/local-extract/aklz4.py`의 알고리즘은 [isHarryh/Ark-Unpacker](https://github.com/isHarryh/Ark-Unpacker)(BSD-3-Clause, MooncellWiki/UnityPy 경유)에서 가져왔으며, Unity 리소스 분석에는 [UnityPy](https://github.com/K0lb3/UnityPy)(MIT)를 사용합니다.
-- 라이브러리: [PixiJS](https://pixijs.com/)(MIT), [pixi-spine](https://github.com/pixijs/spine)(MIT; 포함된 Spine Runtime은 별도로 [Spine Runtimes License](https://esotericsoftware.com/spine-runtimes-license)의 적용을 받음), [three.js](https://threejs.org/)(MIT), [Preact](https://preactjs.com/) + [htm](https://github.com/developit/htm](MIT), [ws](https://github.com/websockets/ws)(MIT).
+- 라이브러리: [PixiJS](https://pixijs.com/)(MIT), [pixi-spine](https://github.com/pixijs/spine)(MIT; 포함된 Spine Runtime은 별도로 [Spine Runtimes License](https://esotericsoftware.com/spine-runtimes-license)의 적용을 받음), [three.js](https://threejs.org/)(MIT), [Preact](https://preactjs.com/) + [htm](https://github.com/developit/htm)(MIT), [ws](https://github.com/websockets/ws)(MIT).
 
 위 프로젝트의 제작자와 유지보수자, 그리고 이 게임을 만들어 준 하이퍼그리프에 감사드립니다.
 
@@ -274,12 +222,10 @@ GOLDEN_FULL=1 node --test test/golden.test.js           # 黄金结果：固定�
 
 버그, 공식 규칙과 일치하지 않는 부분 또는 개선 제안은 Issue로 알려주시고, Pull Request 제출도 환영합니다:
 
-버그, 공식 규칙과 일치하지 않는 부분 또는 개선 제안은 Issue로 알려주시고, Pull Request 제출도 환영합니다:
-
 - 제출 전에 `node --test`를 실행하고 관련 문서도 함께 업데이트하십시오. 문서는 중국어 간체, 코드와 주석은 영어를 사용합니다.
 - 제출된 코드는 GPL-3.0-or-later로 배포됩니다.
 - 게임 소재 파일은 제출하지 마십시오(`public/assets/` 등의 디렉터리는 `.gitignore`에서 제외되어 있습니다).
-- 한국어 패치 제공 https://arca.live/b/arknights/184879626?p=1
+- 한국어 패치 제공: <https://arca.live/b/arknights/184879626?p=1>
 - 본 프로젝트는 비상업적 원칙을 유지합니다. 광고, 유료 기능, 후원 등 어떠한 형태의 수익화 기능도 제출하지 마십시오.
 
 ---
@@ -288,7 +234,7 @@ GOLDEN_FULL=1 node --test test/golden.test.js           # 黄金结果：固定�
 
 An **unofficial, non-commercial fan remake** of Arknights' seasonal auto-chess tower-defense mode *Stronghold Protocol: Alliance*, played in the browser: solo, or 1–4 player co-op (AI teammates can fill seats). Combat is simulated in each player's browser, so a low-power PC can host.
 
-- **Run:** download the all-in-one bundle from [Releases](../../releases/latest), install Node.js 22 or 24, then double-click `scripts\\start-windows.bat` (Windows) or run `./scripts/start.sh` (macOS / Linux) and open <http://localhost:3000>. From source: `npm install && npm run setup && npm start` (setup downloads ~270 MB of art from public mirrors, the emotes and the how-to-play pages included; the official 3D board, some official HUD icons and two enemy models are extracted from a local Arknights client — without one the game uses the 2D board and look-alike stand-ins, and a server can copy `public/assets/local/` and `data/local-assets.json` from the release bundle of the same version).
+- **Run:** download the all-in-one bundle from [Releases](../../releases/latest), install Node.js 22 or 24, then double-click `scripts\start-windows.bat` (Windows) or run `./scripts/start.sh` (macOS / Linux) and open <http://localhost:3000>. From source: `npm install && npm run setup && npm start` (setup downloads ~270 MB of art from public mirrors, the emotes and the how-to-play pages included; the official 3D board, some official HUD icons and two enemy models are extracted from a local Arknights client — without one the game uses the 2D board and look-alike stand-ins, and a server can copy `public/assets/local/` and `data/local-assets.json` from the release bundle of the same version).
 - **Play with friends:** create a co-op room and share the 4-letter key or the `?room=KEY` link. On a LAN, use the address printed at start; otherwise use a virtual-LAN tool, a tunnel or a VPS — see [docs/DEPLOY.md](docs/DEPLOY.md).
 - **Disclaimer:** not affiliated with or endorsed by Hypergryph or Yostar. All Arknights names, art, audio, text and data are © their respective owners and are **not** covered by this project's GPL licence. For study and personal non-commercial use only — no selling, paid distribution, paid servers or monetisation of any kind. Content will be removed on request of the rights holders. Provided "as is", without warranty.
 - **License:** code GPL-3.0-or-later ([LICENSE](LICENSE)); game assets excluded.
