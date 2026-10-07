@@ -20,6 +20,9 @@
 // 옵션:
 //   --check          상태만 보고하고 변경하지 않음 (필수 요소가 누락되면 종료 코드 1)
 //   --no-assets      리소스/오디오 다운로드 건너뛰기
+//   --asset-source=M direct(기본값) 또는 mirror(선택 사항; 공용 IP 조회 없음)
+//                    SP_ASSET_SOURCE는 기본값을 설정하고, SP_GITHUB_PROXY는 HTTPS 접두사(https://gh-proxy.com/)를 설정합니다.
+//                    SP_GITHUB_PROXY를 비워두면 mirror 모드를 포함하여 프록시 기능이 비활성화됩니다.
 //   --no-local       로컬 클라이언트 감지 및 추출 건너뛰기
 //   --local          묻지 않고 로컬 클라이언트에서 추출 (이미 완료된 경우 재추출)
 //   --game <디렉터리> 로컬 클라이언트의 AssetBundle 루트 (…/StreamingAssets/AB/Windows 또는 PlayCover …/Documents/Bundles)
@@ -36,6 +39,7 @@ import path from 'node:path';
 import readline from 'node:readline';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import { validateSource } from './assets/network.mjs';
 
 export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 export const MIN_NODE = 22;
@@ -320,11 +324,13 @@ function ensureVenv(py, log) {
 // ---------------------------------------------------------------------------------------------------
 
 function parseArgs(argv) {
-  const o = { check: false, assets: true, local: 'ask', game: null, yes: false, quiet: false, help: false };
+  const o = { check: false, assets: true, local: 'ask', game: null, yes: false, quiet: false, help: false, source: process.env.SP_ASSET_SOURCE || 'direct' };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === '--check') o.check = true;
     else if (a === '--no-assets') o.assets = false;
+    else if (a === '--asset-source') o.source = argv[++i];
+    else if (a.startsWith('--asset-source=')) o.source = a.slice('--asset-source='.length);
     else if (a === '--no-local') o.local = 'no';
     else if (a === '--local') o.local = 'force';
     else if (a === '--game') { o.game = argv[++i] || null; if (o.local !== 'no') o.local = 'force'; }
@@ -334,6 +340,7 @@ function parseArgs(argv) {
     else if (a === '-h' || a === '--help') o.help = true;
     else throw new Error(`알 수 없는 옵션: ${a} (--help 로 사용법 확인)`);
   }
+  if (!o.help) validateSource(o.source);
   return o;
 }
 
