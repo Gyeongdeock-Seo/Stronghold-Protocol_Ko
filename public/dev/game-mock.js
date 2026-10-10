@@ -23,6 +23,9 @@ import { PHASE, GEO } from '/shared/constants.js';
 const params = new URLSearchParams(location.search);
 const SHOT = params.get('shot') === '1';
 const VARIANTS = new Set((params.get('variant') || '').split(',').filter(Boolean));
+// the match's stage (data/stages.json id): ?stage=act1autochess_m01 boards a stage whose own devices (crates / turrets)
+// stand on the prep field — the default act2autochess_m01 keeps its blowers and turrets off it (rows 6 / 8 / 13)
+const STAGE_ID = params.get('stage') || 'act2autochess_m01';
 
 // ---- deterministic rng ----------------------------------------------------------------------------------
 let seed = 20260927;
@@ -101,7 +104,7 @@ function refreshPrivate() {
   const p = S.priv;
   p.deployCount = p.board.filter((x) => x.kind === 'chess').length;
   p.bonds = computeBonds(p);
-  p.canReady = !p.temp.some(Boolean);
+  p.canReady = !p.personalChoice && !p.temp.some(Boolean);
   const upg = [5, 8, 11, 12, 13];
   p.shop.maxLevel = 6;
   if (p.shop.upgradePrice == null) p.shop.upgradePrice = upg[p.shop.level - 1] ?? 0;
@@ -119,7 +122,7 @@ function pushPublic() {
 function buildState() {
   uidSeq = 100;
   seed = 20260927;
-  const stage = data.lookup('stages', 'act2autochess_m01');
+  const stage = data.lookup('stages', STAGE_ID) || data.lookup('stages', 'act2autochess_m01');
   const melee = stage.deployTiles.normal.melee.slice();
   const ranged = stage.deployTiles.normal.rangedOnly.slice();
   const bonds = data.list('bonds');
@@ -178,7 +181,7 @@ function buildState() {
   ].sort((a, b) => a.t - b.t);
 
   const priv = {
-    playerId: ME, seat: 0, alive: !VARIANTS.has('dead'), lp: 24, funds: 13, bandId: 'band_bldsk', ready: false, canReady: true,
+    playerId: ME, seat: 0, alive: !VARIANTS.has('dead'), lp: 24, funds: 13, bandId: 'band_bldsk', ready: false, canReady: true, personalChoice: null,
     shop: { level, maxLevel: 6, upgradePrice: 9, refreshPrice: 1, freeRefreshes: 0, frozen: VARIANTS.has('frozen'), slots, rewardOffer: null },
     hand, temp, board, deployCap: 8, deployCount: 0, bonds: [],
     effects: [
@@ -206,7 +209,7 @@ function buildState() {
 
   const pub = {
     phase: PHASE.PREP, round: 6, lastRound: 14, bossRound: 14, hiddenRound: 15, deadline: Date.now() + 74000, serverNow: Date.now(), modeId: 'mode_multi_hard', difficulty: 'HARD',
-    stageId: 'act2autochess_m01', factions: ['FLY', 'TIMES', 'SPECIAL'], disabledBonds: [...disabled], bannedChess: banned, bossId: 'boss_5',
+    stageId: STAGE_ID, factions: ['FLY', 'TIMES', 'SPECIAL'], disabledBonds: [...disabled], bannedChess: banned, bossId: 'boss_5',
     hiddenBossId: 'boss_8', teamLp: null, bossHp: null, draft: null, sp: null, players, fields: [],
   };
   if (VARIANTS.has('boss') || VARIANTS.has('bossR')) pub.round = pub.bossRound;
@@ -394,6 +397,20 @@ function startCombat(phase) {
     pub.unite = leakMock ? { helpers: ['ai_2', 'p3'], leakers: ['p1', 'p4'] } : { helpers: ['p1', 'ai_2'], leakers: ['p3'] };
     if (leakMock) { leftOf('p1', 13); leftOf('p4', 3); pub.players[0].status = 'done'; pub.players[2].status = 'helping'; } else leftOf('p3', 12);
   }
+  // the result box after a 联防 (server settle → m.public.uniteResult, ui/gameLogic/phases.js uniteResultBox; GitHub #235):
+  // ?phase=SETTLE&variant=unite — you (p1) leaked and the helpers stopped every enemy: nobody paid → 全员无伤！;
+  // `unite,through` — 3 got through and you were charged 3 → 生命值减少 −3; `unite,through,helper` — you HELPED, a
+  // teammate leaked and paid → the official title alone (全员无伤！ would be false for that teammate); `unite,dead` — you
+  // were eliminated before the round, so `losses` (alive players only, like the server) does not list you → no box.
+  // Without `unite` the SETTLE view has no uniteResult: the round's own battle result box takes over (battleResultBox).
+  if (phase === PHASE.SETTLE && VARIANTS.has('unite')) {
+    const helpers = ['ai_2', 'p3'], leakers = ['p1', 'p4'];
+    pub.uniteResult = VARIANTS.has('through')
+      ? { through: 3, helpers, leakers, losses: { p1: 3, p4: 0, ai_2: 0, p3: 0 } }
+      : { through: 0, helpers, leakers, losses: { p1: 0, p4: 0, ai_2: 0, p3: 0 } };
+    if (VARIANTS.has('helper')) pub.uniteResult = { through: 3, helpers: ['p1', 'ai_2'], leakers: ['p3'], losses: { p1: 0, ai_2: 0, p3: 4, p4: 0 } };
+    if (VARIANTS.has('dead')) delete pub.uniteResult.losses.p1;
+  }
   const countKill = () => {
     if (phase !== PHASE.UNITE) return;
     const pid = leakMock ? 'p1' : 'p3';
@@ -438,7 +455,9 @@ function startCombat(phase) {
     for (const p of board.slice(0, 5)) {
       const c = data.lookup('chess', pick(S.pool).chessId);
       const r = boss ? p.row - 7 : p.row;
-      units.push({ id: id++, kind: 'op', side: 'ally', ownerId: 'ai_2', defId: c.chessId, name: c.name, tier: c.tier, golden: false, spine: c.charId, avatar: c.assets.avatar, x: 20 - p.col, y: r, facing: -1, maxHp: c.stats.maxHp });
+      // 联防: the second helper's board on the other half, shifted 8 columns (server unite.js); boss pairs: mirrored
+      const x = kind === 'unite' ? p.col + 8 : 20 - p.col;
+      units.push({ id: id++, kind: 'op', side: 'ally', ownerId: 'ai_2', defId: c.chessId, name: c.name, tier: c.tier, golden: false, spine: c.charId, avatar: c.assets.avatar, x, y: r, facing: kind === 'unite' ? 1 : -1, maxHp: c.stats.maxHp });
     }
   }
   const enemyKeys = S.priv.nextEnemies.map((e) => e.enemyKey);
@@ -448,7 +467,7 @@ function startCombat(phase) {
     const key = enemyKeys[i % enemyKeys.length];
     const e = data.lookup('enemies', key);
     const y = boss ? [2, 5, 3][i % 3] : [9, 12][i % 2];
-    const startX = boss ? (i % 2 ? 17 : 3) : 10;
+    const startX = boss ? (i % 2 ? 17 : 3) : kind === 'unite' ? 18 : 10; // escaped_multi: the right half's gates
     enemies.push({ id: id++, kind: 'enemy', side: 'enemy', ownerId: ME, defId: key, name: e?.name, spine: key, avatar: key, x: startX + rnd() * 0.3, y, facing: -1, maxHp: e?.stats?.maxHp || 3000, hp: e?.stats?.maxHp || 3000, spawnAt: i * 0.9, dir: boss ? (i % 2 ? -1 : 1) : -1, dead: false });
   }
   if (boss) {
@@ -456,6 +475,14 @@ function startCombat(phase) {
     const e = data.lookup('enemies', bossRec.enemyKey);
     enemies.push({ id: id++, kind: 'enemy', side: 'enemy', ownerId: ME, defId: bossRec.enemyKey, name: bossRec.name, spine: bossRec.enemyKey, avatar: bossRec.enemyKey, x: 10, y: 3, facing: -1, maxHp: e?.stats?.maxHp || 1e5, hp: (e?.stats?.maxHp || 1e5) * 0.62, spawnAt: 0, dir: 0, boss: true, dead: false });
   }
+  // ?variant=devices — the stage's crates inside the rect are device UNITS (kind 'device', defId = the device key), as in the
+  // real sim: absent from the field meta (a battle shown from its start), they come in with 'spawn' events once it steps;
+  // __MOCK__.breakDevice(i) destroys one (hp 0 for a second in the snapshots, then gone)
+  const deviceUnits = !VARIANTS.has('devices') ? [] : (S.stage.devices || [])
+    .filter((d) => d.role === 'crate' && (typeof d.active === 'boolean' ? d.active : !d.hidden)
+      && d.pos[0] >= rect.r0 && d.pos[0] <= rect.r1 && d.pos[1] >= rect.c0 && d.pos[1] <= rect.c1)
+    .map((d) => ({ id: id++, kind: 'device', side: 'ally', ownerId: null, defId: d.key, name: d.name, x: d.pos[1], y: d.pos[0], facing: 1, maxHp: 100, hp: 100, deadAt: null }));
+  // every field — 联防 too — is fought on the round's battlefield (server unite.js; 0.2.0's escaped-level map withdrawn)
   const field = { fieldId, kind, rect, stageId: pub.stageId, units: units.map((u) => ({ ...u })) };
   store.patch('match', { field });
   const allyState = units.map((u) => ({ ...u, hp: u.maxHp * (0.55 + rnd() * 0.45), sp: rnd() * 20, spMax: 20 }));
@@ -472,6 +499,7 @@ function startCombat(phase) {
     if (pausedSince != null) { pausedFor += performance.now() - pausedSince; pausedSince = null; }
     const t = (performance.now() - t0 - pausedFor) / 1000 + 4;
     const ev = [];
+    for (const d of deviceUnits) if (!spawned.has(d.id)) { spawned.add(d.id); ev.push(['spawn', { ...d }]); }
     for (const e of enemies) {
       if (e.dead || t < e.spawnAt) continue;
       if (!spawned.has(e.id)) { spawned.add(e.id); ev.push(['spawn', { ...e }]); }
@@ -491,6 +519,7 @@ function startCombat(phase) {
     if (rnd() < 0.15) { const a = pick(allyState); a.hp = Math.min(a.maxHp, a.hp + 180); ev.push(['heal', a.id, 180]); }
     const snapUnits = [
       ...allyState.map((a) => [a.id, a.x, a.y, a.hp, a.maxHp, a.sp, a.spMax, a.sp > 15 ? 16 : 0, 2]),
+      ...deviceUnits.filter((d) => d.deadAt == null || t - d.deadAt < 1).map((d) => [d.id, d.x, d.y, Math.max(0, d.hp), d.maxHp, 0, 0, 0, 2]),
       ...enemies.filter((e) => !e.dead && t >= e.spawnAt).map((e) => [e.id, e.x, e.y, Math.max(1, e.hp), e.maxHp, 0, 0, e.y === 5 ? 512 : 0, e.dir ? 1 : 2]),
     ];
     // wire frames exactly like server/match/fields.js: `t` is the frame type, game time travels as `gt`; b.ev first
@@ -500,7 +529,13 @@ function startCombat(phase) {
     net._emit('b.snap', snap);
   };
   const e2boss = (e) => !!e.boss;
-  S.battle = { timer: setInterval(tick, 50), fieldRef };
+  S.battle = { timer: setInterval(tick, 50), fieldRef, devices: deviceUnits, hurtDevice: (i = 0, dmg = 100) => {
+    const d = deviceUnits[i];
+    if (!d || d.deadAt != null) return false;
+    d.hp = Math.max(0, d.hp - dmg);
+    if (d.hp <= 0) { d.deadAt = (performance.now() - t0 - pausedFor) / 1000 + 4; net._emit('b.ev', { t: 'b.ev', fieldId: fieldRef.id, gt: d.deadAt, ev: [['die', d.id]] }); }
+    return true;
+  } };
   setTimeout(tick, 60);
 }
 
@@ -558,7 +593,7 @@ async function mockRequest(t, f = {}) {
       prepOnly();
       if (p.shop.refreshPrice > p.funds) fail('NO_FUNDS');
       if (p.shop.freeRefreshes > 0) p.shop.freeRefreshes--; else p.funds -= 1;
-      const n = p.shop.slots.filter((s) => s.kind !== 'item').length;
+      const n = p.shop.slots.filter((s) => !s || s.kind !== 'item').length;
       p.shop.slots = [...Array.from({ length: n }, () => makeSlot(p.shop.level)), makeItemSlot()];
       refreshPrivate(); return {};
     }
@@ -569,7 +604,8 @@ async function mockRequest(t, f = {}) {
       if (p.shop.upgradePrice > p.funds) fail('NO_FUNDS');
       p.funds -= p.shop.upgradePrice; p.shop.level++; p.shop.upgradePrice = [5, 8, 11, 12, 13][p.shop.level - 1] ?? 0;
       const n = p.shop.level >= 4 ? 5 : 4;
-      while (p.shop.slots.filter((s) => s.kind !== 'item').length < n) p.shop.slots.splice(p.shop.slots.length - 1, 0, makeSlot(p.shop.level));
+      // the upgrade opens the new slot EMPTY (server/match/player/economy.js _openLevelSlots: a null slot; a refresh fills it)
+      while (p.shop.slots.filter((s) => !s || s.kind !== 'item').length < n) p.shop.slots.splice(p.shop.slots.length - 1, 0, null);
       toast(`调度中心等级提升至 ${p.shop.level}`, 'success');
       refreshPrivate(); return {};
     }
@@ -644,7 +680,16 @@ async function mockRequest(t, f = {}) {
       }
       pushPublic(); return {};
     }
-    case 'g.art': { prepOnly(); const it = findPiece(f.itemUid); if (!it) fail('BAD_TARGET'); removeAt(it); toast('奇术已生效', 'success'); refreshPrivate(); return {}; }
+    case 'g.art': {
+      prepOnly(); const it = findPiece(f.itemUid); if (!it) fail('BAD_TARGET');
+      if (it.piece.id === 'chess_item_6_03_m') {
+        if (p.personalChoice) fail('BAD_TARGET');
+        const cards = data.get('choices').cards.bounty.filter((c) => c.payout === 'perfect' && c.rounds < 90).slice(0, 3)
+          .map((c) => ({ ...c, kind: 'bounty', id: c.effectId, descRaw: data.lookup('effects', c.effectId)?.descRaw }));
+        p.personalChoice = { id: `mock.choice.${nextUid()}`, round: pub.round, sourceItemId: it.piece.id, cards };
+      }
+      removeAt(it); toast('奇术已生效', 'success'); refreshPrivate(); return {};
+    }
     case 'g.reward': {
       if (!p.shop.rewardOffer) fail('WRONG_PHASE');
       const s = p.shop.rewardOffer.slots[f.idx]; if (!s) fail('BAD_TARGET');
@@ -652,6 +697,15 @@ async function mockRequest(t, f = {}) {
       p.hand[idx] = chessPiece(data.lookup('chess', s.id)); p.shop.rewardOffer = null; refreshPrivate(); return {};
     }
     case 'g.choice': {
+      if (f.choiceId !== undefined) {
+        prepOnly();
+        const choice = p.personalChoice;
+        if (!choice || choice.id !== f.choiceId || choice.round !== pub.round || !choice.cards[f.idx]) fail('BAD_TARGET');
+        const card = choice.cards[f.idx];
+        p.effects.push({ id: choice.id, name: card.name, desc: card.descRaw || card.desc, iconKind: 'choice', iconId: card.id });
+        p.personalChoice = null;
+        refreshPrivate(); return {};
+      }
       if (!pub.sp) fail('WRONG_PHASE');
       const taken = Object.values(pub.sp.picks).includes(f.idx);
       if (taken) fail('BAD_TARGET');
@@ -659,6 +713,7 @@ async function mockRequest(t, f = {}) {
     }
     case 'g.ready': {
       if (pub.phase !== PHASE.PREP) fail('WRONG_PHASE');
+      if (f.ready && p.personalChoice) fail('BAD_TARGET');
       if (f.ready && !p.canReady) fail('TEMP_NOT_EMPTY');
       p.ready = !!f.ready; refreshPrivate(); return {};
     }
@@ -681,7 +736,7 @@ async function mockRequest(t, f = {}) {
         const who = f.fieldId.replace(/^n:/, '');
         if (who !== ME) {
           const units = shuffle(S.pool).slice(0, 6).map((c, i) => ({ id: 900 + i, kind: 'op', side: 'ally', ownerId: who, defId: c.chessId, name: c.name, tier: c.tier, golden: i === 0, spine: c.charId, avatar: c.assets.avatar, x: [3, 4, 5, 7, 8, 5][i], y: [9, 9, 10, 11, 12, 12][i], facing: 1, maxHp: c.stats.maxHp }));
-          // like server/match/Match.js prepFieldMeta: a read-only prep board with THEIR coming enemies (the pen shows them)
+          // like server/match/match/views.js prepFieldMeta: a read-only prep board with THEIR coming enemies (the pen shows them)
           const theirs = S.priv.nextEnemies.filter((e) => e.source !== 'bounty').slice(0, 3).map((e) => ({ ...e, gate: 'upper', count: e.count + 1 }));
           store.patch('match', { field: { fieldId: f.fieldId, kind: 'normal', rect: { ...GEO.NORMAL_RECT }, stageId: pub.stageId, units, prep: true, nextEnemies: theirs } });
         }
@@ -689,6 +744,15 @@ async function mockRequest(t, f = {}) {
       return {};
     }
     case 'g.autoplay': case 'g.leave': case 'room.leave': return {};
+    // the host frees a spectator seat (server/lobby.js removeSpectator; ?variant=spectators seats two, ?variant=notHost makes
+    // another player the host)
+    case 'room.removeSpectator': {
+      const room = store.get().room;
+      if (room?.hostId !== ME) fail('NOT_HOST');
+      if (!(room.spectators || []).some((x) => x.playerId === f.playerId)) fail('BAD_TARGET');
+      store.set({ room: { ...room, spectators: room.spectators.filter((x) => x.playerId !== f.playerId) } });
+      return {};
+    }
     default: return {};
   }
 }
@@ -763,7 +827,11 @@ async function boot() {
     me: { playerId: ME, name: '凯尔希', token: null },
     connection: { status: 'online', ping: 42, attempt: 0, retryAt: 0, lastError: null, everOnline: true },
     clock: { offset: 0, rtt: 20, synced: true },
-    room: { code: 'MOCK', hostId: ME, mode: 'coop', difficulty: 'HARD', inMatch: true, seats: PLAYERS.map((p) => ({ seat: p.seat, playerId: p.playerId, name: p.name, isBot: p.isBot, ready: true, connected: true })) },
+    room: {
+      code: 'MOCK', hostId: VARIANTS.has('notHost') ? 'ai_2' : ME, mode: 'coop', difficulty: 'HARD', inMatch: true,
+      seats: PLAYERS.map((p) => ({ seat: p.seat, playerId: p.playerId, name: p.name, isBot: p.isBot, ready: true, connected: true })),
+      ...(VARIANTS.has('spectators') ? { spectators: [{ playerId: 'sp_1', name: '观战者甲', connected: true }, { playerId: 'sp_2', name: '观战者乙', connected: false }] } : {}),
+    },
   });
   await data.loadAll(GAME_FILES);
   installDeviceSupport();
@@ -773,6 +841,7 @@ async function boot() {
   render(html`<div class="app-root"><div class="app-bg" aria-hidden="true"></div><${GameScreen} /><${ConnectionBanner} /><${ToastHost} /><${UiHosts} /><${GuideHost} /></div>`, document.getElementById('app'));
   renderBar();
   store.subscribe(() => renderBar());
-  globalThis.__MOCK__ = { store, S: () => S, setPhase, mutate: (fn) => { fn(S); refreshPrivate(); }, pushPublic: () => pushPublic() };
+  globalThis.__MOCK__ = { store, S: () => S, setPhase, mutate: (fn) => { fn(S); refreshPrivate(); }, pushPublic: () => pushPublic(),
+    hurtDevice: (i, dmg) => S?.battle?.hurtDevice?.(i, dmg) ?? false };
 }
 boot().catch((err) => console.error('[mock] boot failed', err));
